@@ -1,981 +1,350 @@
+cat > /mnt/user-data/outputs/cloude_vip_webapp.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>CLOUDE VIP PREMIUM</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  :root {
-    --bg: #080b14;
-    --surface: #0e1525;
-    --border: #1a2540;
-    --gold: #f0b429;
-    --blue: #0088cc;
-    --text: #e8eaf0;
-    --muted: #7a8aaa;
-    --red: #ff4444;
-    --green: #00cc66;
-  }
-  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
-  .page { display: none; min-height: 100vh; flex-direction: column; }
-  .page.active { display: flex; }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --bg:#080b14; --surface:#0e1525; --border:#1a2540;
+  --gold:#f0b429; --blue:#0088cc; --text:#e8eaf0;
+  --muted:#7a8aaa; --red:#ff4444; --green:#00cc66;
+}
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; }
+.page { display:none; min-height:100vh; flex-direction:column; }
+.page.active { display:flex; }
 
-  /* HEADER */
-  .header { text-align: center; padding: 28px 20px 16px; }
-  .crown { font-size: 44px; display: block; margin-bottom: 8px; filter: drop-shadow(0 0 16px rgba(240,180,41,0.6)); animation: pulse 2.5s ease-in-out infinite; }
-  @keyframes pulse { 0%,100%{filter:drop-shadow(0 0 16px rgba(240,180,41,0.4))} 50%{filter:drop-shadow(0 0 28px rgba(240,180,41,0.9))} }
-  .header h1 { font-size: 24px; font-weight: 800; letter-spacing: 2px; background: linear-gradient(135deg,#f0b429,#ffd700,#f0b429); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-  .header p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.header { text-align:center; padding:24px 20px 12px; }
+.crown { font-size:48px; display:block; margin-bottom:6px; animation:pulse 2.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{filter:drop-shadow(0 0 12px rgba(240,180,41,0.4))} 50%{filter:drop-shadow(0 0 24px rgba(240,180,41,0.9))} }
+.header h1 { font-size:22px; font-weight:900; letter-spacing:2px; background:linear-gradient(135deg,#f0b429,#ffd700); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.header p { color:var(--muted); font-size:12px; margin-top:4px; }
 
-  /* PLANS */
-  .plans { padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
-  .plan-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 16px; padding: 16px 18px; cursor: pointer; transition: border-color 0.2s, transform 0.15s; position: relative; overflow: hidden; }
-  .plan-card:active { transform: scale(0.98); }
-  .plan-card.selected { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 4px 20px rgba(240,180,41,0.15); }
-  .popular-badge { position: absolute; top: 10px; right: 10px; background: var(--blue); color: #fff; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px; }
-  .vip-badge { position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg,#b8860b,var(--gold)); color: #000; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 20px; }
-  .plan-row { display: flex; align-items: center; justify-content: space-between; }
-  .radio-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); margin-right: 12px; flex-shrink: 0; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
-  .plan-card.selected .radio-dot { border-color: var(--gold); background: var(--gold); }
-  .plan-card.selected .radio-dot::after { content: ''; width: 8px; height: 8px; background: #000; border-radius: 50%; }
-  .plan-name { font-size: 15px; font-weight: 700; }
-  .plan-duration { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .plan-price .amount { font-size: 18px; font-weight: 800; color: var(--gold); }
-  .plan-price .currency { font-size: 11px; color: var(--muted); }
-  .plan-features { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 5px; }
-  .feature-tag { background: rgba(255,255,255,0.05); border-radius: 6px; padding: 2px 7px; font-size: 11px; color: var(--muted); }
+.plans { padding:8px 14px 14px; display:flex; flex-direction:column; gap:10px; flex:1; }
 
-  /* BUTTONS */
-  .btn-wrap { padding: 0 16px 24px; }
-  .btn-main { width: 100%; padding: 15px; background: linear-gradient(135deg,#c89a20,var(--gold),#c89a20); border: none; border-radius: 14px; font-size: 16px; font-weight: 800; color: #000; cursor: pointer; transition: opacity 0.2s, transform 0.15s; box-shadow: 0 4px 20px rgba(240,180,41,0.3); }
-  .btn-main:active { transform: scale(0.98); opacity: 0.9; }
-  .btn-main:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-back { width: 36px; height: 36px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; flex-shrink: 0; }
+.plan-card {
+  background:var(--surface); border:2px solid var(--border);
+  border-radius:16px; padding:14px 16px;
+  cursor:pointer; position:relative; overflow:hidden;
+  user-select:none; -webkit-user-select:none;
+  transition:border-color 0.2s, transform 0.1s;
+}
+.plan-card.selected { border-color:var(--gold); box-shadow:0 0 0 1px var(--gold),0 4px 20px rgba(240,180,41,0.15); }
+.plan-card:active { transform:scale(0.97); }
 
-  /* PAYMENT PAGE */
-  .pay-header { padding: 20px 16px 0; display: flex; align-items: center; gap: 12px; }
-  .pay-title { font-size: 18px; font-weight: 700; }
-  .order-box { margin: 16px 16px 0; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
-  .order-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-  .order-name { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
-  .order-price-big { font-size: 30px; font-weight: 800; color: var(--gold); }
-  .order-price-big span { font-size: 13px; color: var(--muted); font-weight: 400; }
-  .methods-title { margin: 18px 16px 8px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-  .methods { margin: 0 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .method-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; cursor: pointer; transition: border-color 0.2s; text-align: center; }
-  .method-card.selected { border-color: var(--gold); }
-  .method-card.selected .method-name { color: var(--gold); }
-  .method-icon { font-size: 22px; margin-bottom: 4px; }
-  .method-name { font-size: 12px; font-weight: 600; }
-  .card-box { margin: 14px 16px 0; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
-  .card-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
-  .card-number { font-size: 20px; font-weight: 800; letter-spacing: 3px; color: var(--text); font-family: 'Courier New', monospace; word-break: break-all; }
-  .card-owner { font-size: 12px; color: var(--muted); margin-top: 5px; }
-  .copy-btn { margin-top: 10px; width: 100%; padding: 9px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 12px; cursor: pointer; }
+.badge { position:absolute; top:10px; right:10px; font-size:10px; font-weight:800; padding:3px 8px; border-radius:20px; pointer-events:none; }
+.badge-popular { background:var(--blue); color:#fff; }
+.badge-vip { background:linear-gradient(135deg,#b8860b,var(--gold)); color:#000; }
 
-  /* CONFIRM PAGE */
-  .confirm-page { padding: 20px 16px; flex: 1; display: flex; flex-direction: column; }
-  .confirm-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.plan-row { display:flex; align-items:center; justify-content:space-between; pointer-events:none; }
+.plan-left { display:flex; align-items:center; gap:10px; }
+.radio { width:20px; height:20px; border-radius:50%; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+.plan-card.selected .radio { border-color:var(--gold); background:var(--gold); }
+.plan-card.selected .radio::after { content:''; width:8px; height:8px; background:#000; border-radius:50%; }
+.plan-name { font-size:15px; font-weight:700; }
+.plan-dur { font-size:11px; color:var(--muted); margin-top:2px; }
+.plan-price { text-align:right; }
+.plan-price .amt { font-size:18px; font-weight:800; color:var(--gold); }
+.plan-price .cur { font-size:11px; color:var(--muted); }
+.plan-tags { margin-top:8px; display:flex; flex-wrap:wrap; gap:5px; pointer-events:none; }
+.tag { background:rgba(255,255,255,0.05); border-radius:6px; padding:2px 7px; font-size:11px; color:var(--muted); }
 
-  /* CODE BOX */
-  .code-box { background: linear-gradient(135deg, rgba(240,180,41,0.1), rgba(240,180,41,0.05)); border: 2px solid var(--gold); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 16px; }
-  .code-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-  .code-value { font-size: 28px; font-weight: 900; color: var(--gold); letter-spacing: 4px; font-family: 'Courier New', monospace; margin-bottom: 8px; }
-  .code-copy { background: rgba(240,180,41,0.15); border: 1px solid var(--gold); border-radius: 8px; padding: 6px 14px; color: var(--gold); font-size: 12px; cursor: pointer; font-weight: 600; }
+.btn-wrap { padding:0 14px 24px; }
+.btn { width:100%; padding:15px; border:none; border-radius:14px; font-size:15px; font-weight:800; cursor:pointer; transition:opacity 0.2s,transform 0.1s; }
+.btn:active { transform:scale(0.98); }
+.btn-gold { background:linear-gradient(135deg,#c89a20,var(--gold)); color:#000; box-shadow:0 4px 20px rgba(240,180,41,0.3); }
+.btn-gold:disabled { opacity:0.4; cursor:not-allowed; }
+.btn-back { width:36px; height:36px; background:var(--surface); border:1px solid var(--border); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:16px; flex-shrink:0; }
 
-  /* TIMER */
-  .timer-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; margin-bottom: 16px; }
-  .timer-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
-  .timer-value { font-size: 36px; font-weight: 900; font-family: 'Courier New', monospace; }
-  .timer-value.green { color: var(--green); }
-  .timer-value.yellow { color: #ffd700; }
-  .timer-value.red { color: var(--red); animation: blink 0.5s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+/* PAYMENT */
+.pay-header { padding:18px 14px 0; display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.pay-title { font-size:18px; font-weight:700; }
+.box { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px; margin:0 14px 12px; }
+.box-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+.order-name { font-size:16px; font-weight:700; margin-bottom:4px; }
+.order-price { font-size:28px; font-weight:800; color:var(--gold); }
+.order-price span { font-size:12px; color:var(--muted); font-weight:400; }
 
-  /* WARNING */
-  .warning-box { background: rgba(255,68,68,0.1); border: 1px solid rgba(255,68,68,0.4); border-radius: 12px; padding: 14px; margin-bottom: 16px; }
-  .warning-box p { font-size: 13px; color: #ff8888; line-height: 1.6; }
-  .warning-box strong { color: var(--red); }
+.sec-title { margin:0 14px 8px; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+.methods { margin:0 14px 12px; display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.method { background:var(--surface); border:2px solid var(--border); border-radius:12px; padding:12px; cursor:pointer; text-align:center; transition:border-color 0.2s; }
+.method.selected { border-color:var(--gold); }
+.method.selected .mname { color:var(--gold); }
+.micon { font-size:22px; margin-bottom:3px; }
+.mname { font-size:12px; font-weight:600; }
+.card-num { font-size:19px; font-weight:800; letter-spacing:3px; font-family:'Courier New',monospace; word-break:break-all; }
+.card-own { font-size:12px; color:var(--muted); margin-top:4px; }
+.copy-btn { margin-top:10px; width:100%; padding:9px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:10px; color:var(--text); font-size:12px; cursor:pointer; }
 
-  /* EXPIRED */
-  .expired-box { background: rgba(255,68,68,0.15); border: 2px solid var(--red); border-radius: 16px; padding: 20px; text-align: center; display: none; }
-  .expired-box.show { display: block; }
-  .expired-box h3 { color: var(--red); font-size: 18px; margin-bottom: 8px; }
-  .expired-box p { color: var(--muted); font-size: 13px; }
-  .btn-refresh { margin-top: 12px; width: 100%; padding: 12px; background: var(--red); border: none; border-radius: 12px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
+/* CONFIRM */
+.confirm-inner { padding:18px 14px; flex:1; display:flex; flex-direction:column; }
+.code-box { background:linear-gradient(135deg,rgba(240,180,41,0.12),rgba(240,180,41,0.04)); border:2px solid var(--gold); border-radius:16px; padding:18px; text-align:center; margin-bottom:12px; }
+.code-lbl { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.code-val { font-size:26px; font-weight:900; color:var(--gold); letter-spacing:4px; font-family:'Courier New',monospace; margin-bottom:8px; }
+.code-copy { background:rgba(240,180,41,0.15); border:1px solid var(--gold); border-radius:8px; padding:6px 14px; color:var(--gold); font-size:12px; cursor:pointer; font-weight:600; }
 
-  /* SUCCESS */
-  .success-page-inner { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 24px; }
-  .success-icon { font-size: 64px; margin-bottom: 16px; animation: bounce 0.6s ease; }
-  @keyframes bounce { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 100%{transform:scale(1)} }
-  .success-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
-  .success-sub { color: var(--muted); font-size: 14px; line-height: 1.7; }
-  .success-code { margin-top: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
-  .success-code p { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-  .success-code strong { font-size: 18px; color: var(--gold); font-family: 'Courier New', monospace; letter-spacing: 3px; }
+.timer-box { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px; text-align:center; margin-bottom:12px; }
+.timer-lbl { font-size:11px; color:var(--muted); margin-bottom:4px; }
+.timer-val { font-size:34px; font-weight:900; font-family:'Courier New',monospace; }
+.green { color:var(--green); } .yellow { color:#ffd700; } .red { color:var(--red); animation:blink 0.5s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.warn-box { background:rgba(255,68,68,0.08); border:1px solid rgba(255,68,68,0.35); border-radius:12px; padding:12px; margin-bottom:12px; }
+.warn-box p { font-size:12px; color:#ff9999; line-height:1.6; }
+
+.expired-box { background:rgba(255,68,68,0.12); border:2px solid var(--red); border-radius:16px; padding:18px; text-align:center; display:none; margin-bottom:12px; }
+.expired-box.show { display:block; }
+.expired-box h3 { color:var(--red); font-size:17px; margin-bottom:6px; }
+.expired-box p { color:var(--muted); font-size:12px; }
+.btn-red { margin-top:10px; width:100%; padding:12px; background:var(--red); border:none; border-radius:12px; color:#fff; font-size:14px; font-weight:700; cursor:pointer; }
+
+/* SUCCESS */
+.success-inner { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px 20px; }
+.s-icon { font-size:64px; margin-bottom:14px; animation:bounce 0.6s ease; }
+@keyframes bounce { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 100%{transform:scale(1)} }
+.s-title { font-size:22px; font-weight:800; margin-bottom:8px; }
+.s-sub { color:var(--muted); font-size:13px; line-height:1.7; }
+.s-code { margin-top:14px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px; }
+.s-code p { font-size:11px; color:var(--muted); margin-bottom:4px; }
+.s-code strong { font-size:17px; color:var(--gold); font-family:'Courier New',monospace; letter-spacing:3px; }
 </style>
 </head>
 <body>
 
-<!-- PAGE 1: TARIF -->
-<div class="page active" id="page-plans">
+<!-- PAGE 1 -->
+<div class="page active" id="p1">
   <div class="header">
     <span class="crown">👑</span>
     <h1>CLOUDE VIP PREMIUM</h1>
     <p>Yopiq VIP kanalga kirish imkoniyati</p>
   </div>
-  <div class="plans">
-    <div class="plan-card" data-plan="0" onclick="selectPlan(0)">
-      <div class="plan-row">
-        <div style="display:flex;align-items:center">
-          <div class="radio-dot"></div>
-          <div><div class="plan-name">🌙 Yarim oy</div><div class="plan-duration">15 kunlik kirish</div></div>
-        </div>
-        <div class="plan-price"><div class="amount">30 000</div><div class="currency">so'm</div></div>
-      </div>
-      <div class="plan-features"><span class="feature-tag">✓ VIP kanal</span><span class="feature-tag">✓ Eksklyuziv kontent</span></div>
-    </div>
-    <div class="plan-card popular" data-plan="1" onclick="selectPlan(1)">
-      <span class="popular-badge">MASHHUR</span>
-      <div class="plan-row">
-        <div style="display:flex;align-items:center">
-          <div class="radio-dot"></div>
-          <div><div class="plan-name">💎 1 Oylik</div><div class="plan-duration">30 kunlik kirish</div></div>
-        </div>
-        <div class="plan-price"><div class="amount">60 000</div><div class="currency">so'm</div></div>
-      </div>
-      <div class="plan-features"><span class="feature-tag">✓ VIP kanal</span><span class="feature-tag">✓ Eksklyuziv</span><span class="feature-tag">✓ Prioritet</span></div>
-    </div>
-    <div class="plan-card" data-plan="2" onclick="selectPlan(2)">
-      <div class="plan-row">
-        <div style="display:flex;align-items:center">
-          <div class="radio-dot"></div>
-          <div><div class="plan-name">🏆 1 Sezon</div><div class="plan-duration">3 oylik kirish</div></div>
-        </div>
-        <div class="plan-price"><div class="amount">100 000</div><div class="currency">so'm</div></div>
-      </div>
-      <div class="plan-features"><span class="feature-tag">✓ VIP kanal</span><span class="feature-tag">✓ Bonus</span></div>
-    </div>
-    <div class="plan-card" data-plan="3" onclick="selectPlan(3)">
-      <span class="vip-badge">⭐ VIP</span>
-      <div class="plan-row">
-        <div style="display:flex;align-items:center">
-          <div class="radio-dot"></div>
-          <div><div class="plan-name">👑 VIP Sezon</div><div class="plan-duration">To'liq VIP paket</div></div>
-        </div>
-        <div class="plan-price"><div class="amount">299 000</div><div class="currency">so'm</div></div>
-      </div>
-      <div class="plan-features"><span class="feature-tag">✓ Hamma narsa</span><span class="feature-tag">✓ VIP status</span><span class="feature-tag">✓ Shaxsiy</span></div>
-    </div>
-  </div>
+  <div class="plans" id="plans-list"></div>
   <div class="btn-wrap">
-    <button class="btn-main" id="btn-continue" disabled onclick="goToPayment()">Tarifni tanlang</button>
+    <button class="btn btn-gold" id="btn-next" disabled onclick="goPayment()">Tarifni tanlang</button>
   </div>
 </div>
 
-<!-- PAGE 2: TO'LOV -->
-<div class="page" id="page-payment">
+<!-- PAGE 2 -->
+<div class="page" id="p2">
   <div class="pay-header">
-    <div class="btn-back" onclick="goBack('page-plans')">←</div>
+    <div class="btn-back" onclick="show('p1')">←</div>
     <div class="pay-title">To'lov</div>
   </div>
-  <div class="order-box">
-    <div class="order-label">Tanlangan tarif</div>
-    <div class="order-name" id="pay-plan-name">—</div>
-    <div class="order-price-big" id="pay-plan-price">— <span>so'm</span></div>
+  <div class="box">
+    <div class="box-label">Tanlangan tarif</div>
+    <div class="order-name" id="o-name">—</div>
+    <div class="order-price" id="o-price">— <span>so'm</span></div>
   </div>
-  <div class="methods-title">To'lov usulini tanlang</div>
+  <div class="sec-title">To'lov usulini tanlang</div>
   <div class="methods">
-    <div class="method-card selected" onclick="selectMethod(this,'Uzcard')"><div class="method-icon">🏦</div><div class="method-name">Uzcard</div></div>
-    <div class="method-card" onclick="selectMethod(this,'Visa')"><div class="method-icon">💠</div><div class="method-name">Visa</div></div>
-    <div class="method-card" onclick="selectMethod(this,'Click')"><div class="method-icon">⚡</div><div class="method-name">Click</div></div>
-    <div class="method-card" onclick="selectMethod(this,'Binance')"><div class="method-icon">🟡</div><div class="method-name">Binance</div></div>
+    <div class="method selected" onclick="pickMethod(this,'Uzcard')"><div class="micon">🏦</div><div class="mname">Uzcard</div></div>
+    <div class="method" onclick="pickMethod(this,'Visa')"><div class="micon">💠</div><div class="mname">Visa</div></div>
+    <div class="method" onclick="pickMethod(this,'Click')"><div class="micon">⚡</div><div class="mname">Click</div></div>
+    <div class="method" onclick="pickMethod(this,'Binance')"><div class="micon">🟡</div><div class="mname">Binance</div></div>
   </div>
-  <div class="card-box">
-    <div class="card-label">Quyidagi kartaga o'tkazing:</div>
-    <div class="card-number" id="card-number">0000 0000 0000 0000</div>
-    <div class="card-owner" id="card-owner">Karta egasi: —</div>
+  <div class="box">
+    <div class="box-label">Kartaga o'tkazing</div>
+    <div class="card-num" id="c-num">0000 0000 0000 0000</div>
+    <div class="card-own" id="c-own">Karta egasi: —</div>
     <button class="copy-btn" onclick="copyCard()">📋 Raqamni nusxalash</button>
   </div>
-  <div class="btn-wrap" style="margin-top:16px">
-    <button class="btn-main" onclick="goToConfirm()">✅ To'lov qildim — Tasdiqlash</button>
+  <div class="btn-wrap">
+    <button class="btn btn-gold" onclick="goConfirm()">✅ To'lov qildim — Tasdiqlash</button>
   </div>
 </div>
 
-<!-- PAGE 3: TASDIQLASH (TAYMER + KOD) -->
-<div class="page" id="page-confirm">
-  <div class="confirm-page">
-    <div class="confirm-header">
-      <div class="btn-back" onclick="goBack('page-payment')">←</div>
+<!-- PAGE 3 -->
+<div class="page" id="p3">
+  <div class="confirm-inner">
+    <div class="pay-header" style="margin:0 0 14px; padding:0;">
+      <div class="btn-back" onclick="backFromConfirm()">←</div>
       <div class="pay-title">Tasdiqlash</div>
     </div>
-
-    <!-- KOD -->
     <div class="code-box">
-      <div class="code-label">📋 Sizning tasdiqlash kodingiz</div>
-      <div class="code-value" id="confirm-code">VIP-0000-0000</div>
+      <div class="code-lbl">📋 Sizning tasdiqlash kodingiz</div>
+      <div class="code-val" id="code-val">VIP-0000-0000</div>
       <button class="code-copy" onclick="copyCode()">📋 Kodni nusxalash</button>
     </div>
-
-    <!-- TAYMER -->
     <div class="timer-box">
-      <div class="timer-label">⏱️ Skrinshot yuborish vaqti</div>
-      <div class="timer-value green" id="timer-display">3:00</div>
+      <div class="timer-lbl">⏱️ Skrinshot yuborish vaqti</div>
+      <div class="timer-val green" id="timer">3:00</div>
     </div>
-
-    <!-- OGOHLANTIRISH -->
-    <div class="warning-box">
-      <p>⚠️ <strong>MUHIM!</strong> To'lov izohiga (comment) yuqoridagi kodni yozing.<br><br>
-      Kod bo'lmagan yoki <strong>3 daqiqa</strong> o'tgan skrinshot tasdiqlanmaydi!</p>
+    <div class="warn-box">
+      <p>⚠️ <strong style="color:#ff4444">MUHIM!</strong> To'lov izohiga (comment) yuqoridagi kodni yozing.<br><br>
+      Kod bo'lmasa yoki <strong style="color:#ff4444">3 daqiqa</strong> o'tsa — skrinshot tasdiqlanmaydi!</p>
     </div>
-
-    <!-- ESKIRGAN -->
-    <div class="expired-box" id="expired-box">
+    <div class="expired-box" id="exp-box">
       <h3>⏰ Vaqt tugadi!</h3>
-      <p>Sizning kod eskirdi. Yangi kod olish uchun qaytadan bosing.</p>
-      <button class="btn-refresh" onclick="restartConfirm()">🔄 Yangi kod olish</button>
+      <p>Kodingiz eskirdi. Yangi kod oling.</p>
+      <button class="btn-red" onclick="goConfirm()">🔄 Yangi kod olish</button>
     </div>
-
-    <div id="confirm-btn-wrap">
-      <button class="btn-main" onclick="goToSuccess()" id="confirm-btn">📸 Skrinshot yuboraman</button>
+    <div id="confirm-btn">
+      <button class="btn btn-gold" onclick="goSuccess()">📸 Skrinshot yuboraman</button>
     </div>
   </div>
 </div>
 
-<!-- PAGE 4: SUCCESS -->
-<div class="page" id="page-success">
-  <div class="success-page-inner">
-    <div class="success-icon">🎉</div>
-    <div class="success-title">Rahmat!</div>
-    <div class="success-sub">
-      Endi botga skrinshot yuboring.<br><br>
-      Admin <strong>24 soat ichida</strong> tasdiqlaydi va siz VIP kanalga qo'shilasiz! 👑
-    </div>
-    <div class="success-code">
+<!-- PAGE 4 -->
+<div class="page" id="p4">
+  <div class="success-inner">
+    <div class="s-icon">🎉</div>
+    <div class="s-title">Rahmat!</div>
+    <div class="s-sub">Endi botga skrinshot yuboring.<br><br>Admin <strong>24 soat ichida</strong> tasdiqlaydi va siz VIP kanalga qo'shilasiz! 👑</div>
+    <div class="s-code">
       <p>Kodingizni unutmang:</p>
-      <strong id="success-code-display">VIP-0000-0000</strong>
+      <strong id="s-code">VIP-0000-0000</strong>
     </div>
   </div>
 </div>
 
 <script>
-  if (window.Telegram && window.Telegram.WebApp) {
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand();
-  }
+if(window.Telegram&&window.Telegram.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();}
 
-  const plans = [
-    { name: '🌙 Yarim oy (15 kun)', price: '30 000' },
-    { name: '💎 1 Oylik (30 kun)', price: '60 000' },
-    { name: '🏆 1 Sezon (3 oy)', price: '100 000' },
-    { name: '👑 VIP Sezon', price: '299 000' },
-  ];
+const PLANS=[
+  {n:'🌙 Yarim oy',d:'15 kunlik kirish',p:'30 000',tags:['✓ VIP kanal','✓ Eksklyuziv kontent']},
+  {n:'💎 1 Oylik',d:'30 kunlik kirish',p:'60 000',badge:'MASHHUR',badgeClass:'badge-popular',tags:['✓ VIP kanal','✓ Eksklyuziv','✓ Prioritet']},
+  {n:'🏆 1 Sezon',d:'3 oylik kirish',p:'100 000',tags:['✓ VIP kanal','✓ Bonus materiallar']},
+  {n:'👑 VIP Sezon',d:"To'liq VIP paket",p:'299 000',badge:'⭐ VIP',badgeClass:'badge-vip',tags:['✓ Hamma narsa','✓ VIP status','✓ Shaxsiy']},
+];
 
-  const cardData = {
-    'Uzcard':  { number: '8600 0000 0000 0000', owner: 'Ism Familiya' },
-    'Visa':    { number: '4111 0000 0000 0000', owner: 'Ism Familiya' },
-    'Click':   { number: '8600 0000 0000 0000', owner: 'Click orqali' },
-    'Binance': { number: 'ID: 000000000', owner: 'Binance Pay ID' },
-  };
+const CARDS={
+  Uzcard:{n:'8600 0000 0000 0000',o:'Ism Familiya'},
+  Visa:{n:'4111 0000 0000 0000',o:'Ism Familiya'},
+  Click:{n:'8600 0000 0000 0000',o:'Click orqali'},
+  Binance:{n:'ID: 000000000',o:'Binance Pay ID'},
+};
 
-  let selectedPlan = -1;
-  let selectedMethod = 'Uzcard';
-  let timerInterval = null;
-  let confirmCode = '';
-  let timerExpired = false;
+let sel=-1, method='Uzcard', timerID=null, expired=false, myCode='';
 
-  function generateCode() {
-    const userId = Math.floor(Math.random() * 9000) + 1000;
-    const rand = Math.floor(Math.random() * 9000) + 1000;
-    return `VIP-${userId}-${rand}`;
-  }
+// Render plans
+const pl=document.getElementById('plans-list');
+PLANS.forEach((p,i)=>{
+  const div=document.createElement('div');
+  div.className='plan-card';
+  div.dataset.i=i;
+  div.innerHTML=`
+    ${p.badge?`<div class="badge ${p.badgeClass}">${p.badge}</div>`:''}
+    <div class="plan-row">
+      <div class="plan-left">
+        <div class="radio"></div>
+        <div><div class="plan-name">${p.n}</div><div class="plan-dur">${p.d}</div></div>
+      </div>
+      <div class="plan-price"><div class="amt">${p.p}</div><div class="cur">so'm</div></div>
+    </div>
+    <div class="plan-tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+  `;
+  div.addEventListener('click',()=>selectPlan(i));
+  pl.appendChild(div);
+});
 
-  function selectPlan(idx) {
-    document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
-    document.querySelector(`[data-plan="${idx}"]`).classList.add('selected');
-    selectedPlan = idx;
-    const btn = document.getElementById('btn-continue');
-    btn.disabled = false;
-    btn.textContent = 'Davom etish →';
-  }
+function selectPlan(i){
+  document.querySelectorAll('.plan-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelector(`.plan-card[data-i="${i}"]`).classList.add('selected');
+  sel=i;
+  const btn=document.getElementById('btn-next');
+  btn.disabled=false;
+  btn.textContent='Davom etish →';
+}
 
-  function goToPayment() {
-    if (selectedPlan < 0) return;
-    const p = plans[selectedPlan];
-    document.getElementById('pay-plan-name').textContent = p.name;
-    document.getElementById('pay-plan-price').innerHTML = p.price + " <span>so'm</span>";
-    updateCard();
-    showPage('page-payment');
-  }
+function goPayment(){
+  if(sel<0)return;
+  const p=PLANS[sel];
+  document.getElementById('o-name').textContent=p.n+' ('+p.d+')';
+  document.getElementById('o-price').innerHTML=p.p+' <span>so\'m</span>';
+  updateCard();
+  show('p2');
+}
 
-  function selectMethod(el, method) {
-    document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-    selectedMethod = method;
-    updateCard();
-  }
+function pickMethod(el,m){
+  document.querySelectorAll('.method').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  method=m;
+  updateCard();
+}
 
-  function updateCard() {
-    const d = cardData[selectedMethod];
-    document.getElementById('card-number').textContent = d.number;
-    document.getElementById('card-owner').textContent = 'Karta egasi: ' + d.owner;
-  }
+function updateCard(){
+  const c=CARDS[method];
+  document.getElementById('c-num').textContent=c.n;
+  document.getElementById('c-own').textContent='Karta egasi: '+c.o;
+}
 
-  function copyCard() {
-    const num = document.getElementById('card-number').textContent.replace(/\s/g, '');
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(num).then(() => {
-        const btn = document.querySelector('.copy-btn');
-        btn.textContent = '✅ Nusxalandi!';
-        setTimeout(() => btn.textContent = '📋 Raqamni nusxalash', 2000);
-      });
+function copyCard(){
+  const n=document.getElementById('c-num').textContent.replace(/\s/g,'');
+  navigator.clipboard&&navigator.clipboard.writeText(n).then(()=>{
+    const b=document.querySelector('.copy-btn');
+    b.textContent='✅ Nusxalandi!';
+    setTimeout(()=>b.textContent='📋 Raqamni nusxalash',2000);
+  });
+}
+
+function goConfirm(){
+  const r=Math.floor(Math.random()*9000)+1000;
+  const r2=Math.floor(Math.random()*9000)+1000;
+  myCode=`VIP-${r}-${r2}`;
+  document.getElementById('code-val').textContent=myCode;
+  document.getElementById('s-code').textContent=myCode;
+  document.getElementById('exp-box').classList.remove('show');
+  document.getElementById('confirm-btn').style.display='block';
+  expired=false;
+  startTimer(180);
+  show('p3');
+}
+
+function startTimer(sec){
+  if(timerID)clearInterval(timerID);
+  let left=sec;
+  tick(left);
+  timerID=setInterval(()=>{
+    left--;
+    tick(left);
+    if(left<=0){
+      clearInterval(timerID);
+      expired=true;
+      document.getElementById('timer').textContent='0:00';
+      document.getElementById('timer').className='timer-val red';
+      document.getElementById('exp-box').classList.add('show');
+      document.getElementById('confirm-btn').style.display='none';
     }
-  }
+  },1000);
+}
 
-  function goToConfirm() {
-    // Yangi kod va taymer
-    confirmCode = generateCode();
-    document.getElementById('confirm-code').textContent = confirmCode;
-    document.getElementById('success-code-display').textContent = confirmCode;
+function tick(s){
+  const m=Math.floor(s/60),sec=s%60;
+  const el=document.getElementById('timer');
+  el.textContent=`${m}:${sec.toString().padStart(2,'0')}`;
+  el.className='timer-val '+(s>90?'green':s>30?'yellow':'red');
+}
 
-    // Expired ni yashir
-    document.getElementById('expired-box').classList.remove('show');
-    document.getElementById('confirm-btn-wrap').style.display = 'block';
+function copyCode(){
+  navigator.clipboard&&navigator.clipboard.writeText(myCode).then(()=>{
+    const b=document.querySelector('.code-copy');
+    b.textContent='✅ Nusxalandi!';
+    setTimeout(()=>b.textContent='📋 Kodni nusxalash',2000);
+  });
+}
 
-    timerExpired = false;
-    startTimer(180); // 3 daqiqa = 180 soniya
-    showPage('page-confirm');
-  }
+function goSuccess(){
+  if(expired)return;
+  if(timerID)clearInterval(timerID);
+  show('p4');
+  if(window.Telegram&&window.Telegram.WebApp)Telegram.WebApp.close();
+}
 
-  function startTimer(seconds) {
-    if (timerInterval) clearInterval(timerInterval);
-    let remaining = seconds;
-    updateTimerDisplay(remaining);
+function backFromConfirm(){
+  if(timerID)clearInterval(timerID);
+  show('p2');
+}
 
-    timerInterval = setInterval(() => {
-      remaining--;
-      updateTimerDisplay(remaining);
-
-      if (remaining <= 0) {
-        clearInterval(timerInterval);
-        timerExpired = true;
-        document.getElementById('timer-display').textContent = '0:00';
-        document.getElementById('timer-display').className = 'timer-value red';
-        document.getElementById('expired-box').classList.add('show');
-        document.getElementById('confirm-btn-wrap').style.display = 'none';
-      }
-    }, 1000);
-  }
-
-  function updateTimerDisplay(seconds) {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    const display = `${m}:${s.toString().padStart(2, '0')}`;
-    const el = document.getElementById('timer-display');
-    el.textContent = display;
-
-    if (seconds > 90) el.className = 'timer-value green';
-    else if (seconds > 30) el.className = 'timer-value yellow';
-    else el.className = 'timer-value red';
-  }
-
-  function copyCode() {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(confirmCode).then(() => {
-        const btn = document.querySelector('.code-copy');
-        btn.textContent = '✅ Nusxalandi!';
-        setTimeout(() => btn.textContent = '📋 Kodni nusxalash', 2000);
-      });
-    }
-  }
-
-  function restartConfirm() {
-    goToConfirm();
-  }
-
-  function goToSuccess() {
-    if (timerExpired) return;
-    if (timerInterval) clearInterval(timerInterval);
-      padding: 32px 20px 20px;
-    position: relative;
-  }
-  .crown {
-    font-size: 48px;
-    display: block;
-    margin-bottom: 8px;
-    filter: drop-shadow(0 0 16px rgba(240,180,41,0.6));
-    animation: pulse 2.5s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%,100% { filter: drop-shadow(0 0 16px rgba(240,180,41,0.4)); }
-    50% { filter: drop-shadow(0 0 28px rgba(240,180,41,0.9)); }
-  }
-  .header h1 {
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    background: linear-gradient(135deg, #f0b429, #ffd700, #f0b429);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .header p {
-    color: var(--muted);
-    font-size: 13px;
-    margin-top: 4px;
-    letter-spacing: 0.5px;
-  }
-
-  /* ── PLANS ── */
-  .plans {
-    padding: 8px 16px 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    flex: 1;
-  }
-
-  .plan-card {
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 16px;
-    padding: 18px 20px;
-    cursor: pointer;
-    transition: border-color 0.2s, transform 0.15s;
-    position: relative;
-    overflow: hidden;
-  }
-  .plan-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(240,180,41,0.04), transparent);
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-  .plan-card:active { transform: scale(0.98); }
-  .plan-card.selected {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 1px var(--gold), 0 4px 20px rgba(240,180,41,0.15);
-  }
-  .plan-card.selected::before { opacity: 1; }
-  .plan-card.popular {
-    border-color: #1a3a5c;
-  }
-
-  .popular-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: var(--blue);
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 20px;
-    letter-spacing: 0.5px;
-  }
-  .vip-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: linear-gradient(135deg, #b8860b, var(--gold));
-    color: #000;
-    font-size: 10px;
-    font-weight: 800;
-    padding: 3px 8px;
-    border-radius: 20px;
-    letter-spacing: 0.5px;
-  }
-
-  .plan-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .plan-name {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-  }
-  .plan-duration {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 2px;
-  }
-  .plan-price {
-    text-align: right;
-  }
-  .plan-price .amount {
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--gold);
-  }
-  .plan-price .currency {
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .plan-perday {
-    font-size: 11px;
-    color: var(--muted);
-    text-align: right;
-    margin-top: 2px;
-  }
-
-  .plan-features {
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .feature-tag {
-    background: rgba(255,255,255,0.05);
-    border-radius: 6px;
-    padding: 3px 8px;
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  .radio-dot {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    margin-right: 14px;
-    flex-shrink: 0;
-    transition: all 0.2s;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .plan-card.selected .radio-dot {
-    border-color: var(--gold);
-    background: var(--gold);
-  }
-  .plan-card.selected .radio-dot::after {
-    content: '';
-    width: 8px; height: 8px;
-    background: #000;
-    border-radius: 50%;
-  }
-
-  /* ── BUTTON ── */
-  .btn-wrap { padding: 0 16px 32px; }
-  .btn-main {
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(135deg, #c89a20, var(--gold), #c89a20);
-    border: none;
-    border-radius: 14px;
-    font-size: 16px;
-    font-weight: 800;
-    color: #000;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.15s;
-    box-shadow: 0 4px 20px rgba(240,180,41,0.3);
-  }
-  .btn-main:active { transform: scale(0.98); opacity: 0.9; }
-  .btn-main:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  /* ── PAYMENT PAGE ── */
-  .pay-header {
-    padding: 24px 20px 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .back-btn {
-    width: 36px; height: 36px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    font-size: 16px;
-    flex-shrink: 0;
-  }
-  .pay-title { font-size: 18px; font-weight: 700; }
-
-  .order-box {
-    margin: 20px 16px 0;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-  }
-  .order-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-  .order-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-  .order-price-big { font-size: 32px; font-weight: 800; color: var(--gold); }
-  .order-price-big span { font-size: 14px; color: var(--muted); font-weight: 400; }
-
-  .methods-title {
-    margin: 24px 16px 10px;
-    font-size: 13px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .methods {
-    margin: 0 16px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .method-card {
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 12px;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    text-align: center;
-  }
-  .method-card.selected { border-color: var(--gold); }
-  .method-card.selected .method-name { color: var(--gold); }
-  .method-icon { font-size: 24px; margin-bottom: 4px; }
-  .method-name { font-size: 13px; font-weight: 600; }
-
-  .card-box {
-    margin: 20px 16px 0;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-  }
-  .card-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
-  .card-number {
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: 3px;
-    color: var(--text);
-    font-family: 'Courier New', monospace;
-    word-break: break-all;
-  }
-  .card-owner { font-size: 13px; color: var(--muted); margin-top: 6px; }
-  .copy-btn {
-    margin-top: 12px;
-    width: 100%;
-    padding: 10px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font-size: 13px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .copy-btn:active { background: rgba(255,255,255,0.1); }
-
-  .steps-box {
-    margin: 16px 16px 0;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px 20px;
-  }
-  .steps-title { font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(--muted); }
-  .step { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
-  .step-num {
-    width: 24px; height: 24px;
-    background: var(--blue);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700;
-    flex-shrink: 0;
-  }
-  .step-text { font-size: 13px; color: var(--muted); line-height: 1.5; padding-top: 3px; }
-
-  /* ── SUCCESS PAGE ── */
-  .success-page {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    min-height: 100vh;
-    padding: 40px 24px;
-    text-align: center;
-  }
-  .success-icon { font-size: 72px; margin-bottom: 20px; animation: bounce 0.6s ease; }
-  @keyframes bounce {
-    0% { transform: scale(0); }
-    60% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-  }
-  .success-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
-  .success-sub { color: var(--muted); font-size: 14px; line-height: 1.6; }
-
-  .divider { height: 1px; background: var(--border); margin: 0 16px; }
-</style>
-</head>
-<body>
-
-<!-- PAGE 1: TARIF TANLASH -->
-<div class="page active" id="page-plans">
-  <div class="header">
-    <span class="crown">👑</span>
-    <h1>CLOUDE VIP PREMIUM</h1>
-    <p>Yopiq VIP kanalga kirish imkoniyati</p>
-  </div>
-
-  <div class="plans">
-    <div class="plan-card" data-plan="0" onclick="selectPlan(0)">
-      <div class="plan-row">
-        <div style="display:flex;align-items:center">
-          <div class="radio-dot"></div>
-          <div>
-            <div class="plan-name">🌙 Yarim oy</div>
-            <div class="plan-duration">15 kunlik kirish</div>
-          </div>
-        </div>
-        <div class="plan-price">
-          <div class="amount">30 000</div>
-          <div class="currency">so'm</div>
-          <div class="plan-perday">~2 000/kun</div>
-        </div>
-      </div>
-      <div class="plan-features">
-        <span class="feature-tag">✓ VIP kanal</span>
-        <span class="feature-tag">✓ Eksklyuziv kontent</span>
-      </div>
-    </div>
-
-    <div class="plan-card popular" data-plan="1" onclick="selectPlan(1)">
-      <span class="popular-badge">MASHHUR</span>
-      <div class="plan-row">
-        <div style="display:flex;align-items:center">
-          <div class="radio-dot"></div>
-          <div>
-            <div class="plan-name">💎 1 Oylik</div>
-            <div class="plan-duration">30 kunlik kirish</div>
-          </div>
-        </div>
-        <div class="plan-price">
-          <div class="amount">60 000</div>
-          <div class="currency">so'm</div>
-          <div class="plan-perday">~2 000/kun</div>
-        </div>
-      </div>
-      <div class="plan-features">
-        <span class="feature-tag">✓ VIP kanal</span>
-        <span class="feature-tag">✓ Eksklyuziv kontent</span>
-        <span class="feature-tag">✓ Prioritet</span>
-      </div>
-    </div>
-
-    <div class="plan-card" data-plan="2" onclick="selectPlan(2)">
-      <div class="plan-row">
-        <div style="display:flex;align-items:center">
-          <div class="radio-dot"></div>
-          <div>
-            <div class="plan-name">🏆 1 Sezon</div>
-            <div class="plan-duration">3 oylik kirish</div>
-          </div>
-        </div>
-        <div class="plan-price">
-          <div class="amount">100 000</div>
-          <div class="currency">so'm</div>
-          <div class="plan-perday">~1 111/kun</div>
-        </div>
-      </div>
-      <div class="plan-features">
-        <span class="feature-tag">✓ VIP kanal</span>
-        <span class="feature-tag">✓ Barcha kontent</span>
-        <span class="feature-tag">✓ Bonus materiallar</span>
-      </div>
-    </div>
-
-    <div class="plan-card" data-plan="3" onclick="selectPlan(3)">
-      <span class="vip-badge">⭐ VIP</span>
-      <div class="plan-row">
-        <div style="display:flex;align-items:center">
-          <div class="radio-dot"></div>
-          <div>
-            <div class="plan-name">👑 VIP Sezon</div>
-            <div class="plan-duration">To'liq VIP paket</div>
-          </div>
-        </div>
-        <div class="plan-price">
-          <div class="amount">299 000</div>
-          <div class="currency">so'm</div>
-          <div class="plan-perday">Eng to'liq</div>
-        </div>
-      </div>
-      <div class="plan-features">
-        <span class="feature-tag">✓ Hamma narsa</span>
-        <span class="feature-tag">✓ VIP status</span>
-        <span class="feature-tag">✓ Shaxsiy murojaat</span>
-        <span class="feature-tag">✓ Maxsus imtiyozlar</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="btn-wrap">
-    <button class="btn-main" id="btn-continue" disabled onclick="goToPayment()">
-      Tarifni tanlang
-    </button>
-  </div>
-</div>
-
-<!-- PAGE 2: TO'LOV -->
-<div class="page" id="page-payment">
-  <div class="pay-header">
-    <div class="back-btn" onclick="goBack()">←</div>
-    <div class="pay-title">To'lov</div>
-  </div>
-
-  <div class="order-box">
-    <div class="order-label">Tanlangan tarif</div>
-    <div class="order-name" id="pay-plan-name">—</div>
-    <div class="order-price-big" id="pay-plan-price">— <span>so'm</span></div>
-  </div>
-
-  <div class="methods-title">To'lov usulini tanlang</div>
-  <div class="methods">
-    <div class="method-card selected" onclick="selectMethod(this,'Uzcard')">
-      <div class="method-icon">🏦</div>
-      <div class="method-name">Uzcard</div>
-    </div>
-    <div class="method-card" onclick="selectMethod(this,'Visa')">
-      <div class="method-icon">💠</div>
-      <div class="method-name">Visa</div>
-    </div>
-    <div class="method-card" onclick="selectMethod(this,'Click')">
-      <div class="method-icon">⚡</div>
-      <div class="method-name">Click</div>
-    </div>
-    <div class="method-card" onclick="selectMethod(this,'Binance')">
-      <div class="method-icon">🟡</div>
-      <div class="method-name">Binance</div>
-    </div>
-  </div>
-
-  <div class="card-box">
-    <div class="card-label">Quyidagi kartaga o'tkazing:</div>
-    <div class="card-number" id="card-number">0000 0000 0000 0000</div>
-    <div class="card-owner" id="card-owner">Karta egasi: —</div>
-    <button class="copy-btn" onclick="copyCard()">📋 Raqamni nusxalash</button>
-  </div>
-
-  <div class="steps-box">
-    <div class="steps-title">QANDAY TO'LASH KERAK</div>
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-text">Yuqoridagi kartaga aniq summani o'tkazing</div>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-text">To'lov chekining <strong>skrinshot</strong>ini oling</div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-text">Skrinshoni botga yuboring va tasdiqlashni kuting</div>
-    </div>
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-text">Admin tasdiqlashi bilan VIP kanalga qo'shilasiz ✅</div>
-    </div>
-  </div>
-
-  <div class="btn-wrap" style="margin-top:20px">
-    <button class="btn-main" onclick="goToSuccess()">
-      ✅ To'lov qildim — Skrinshot yuboraman
-    </button>
-  </div>
-</div>
-
-<!-- PAGE 3: SUCCESS -->
-<div class="page" id="page-success">
-  <div class="success-page">
-    <div class="success-icon">🎉</div>
-    <div class="success-title">Rahmat!</div>
-    <div class="success-sub">
-      To'lov skrinshoti botga yuboring.<br><br>
-      Admin <strong>24 soat ichida</strong> tasdiqlaydi<br>
-      va siz VIP kanalga qo'shilasiz! 👑
-    </div>
-  </div>
-</div>
-
-<script>
-  // Telegram WebApp init
-  if (window.Telegram && window.Telegram.WebApp) {
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand();
-  }
-
-  const plans = [
-    { name: '🌙 Yarim oy (15 kun)', price: '30 000', raw: '30000' },
-    { name: '💎 1 Oylik (30 kun)', price: '60 000', raw: '60000' },
-    { name: '🏆 1 Sezon (3 oy)', price: '100 000', raw: '100000' },
-    { name: '👑 VIP Sezon', price: '299 000', raw: '299000' },
-  ];
-
-  // Karta raqamlari — keyinroq o'zgartirasiz
-  const cardData = {
-    'Uzcard':  { number: '8600 0000 0000 0000', owner: 'Ism Familiya' },
-    'Visa':    { number: '4111 0000 0000 0000', owner: 'Ism Familiya' },
-    'Click':   { number: '8600 0000 0000 0000', owner: 'Click orqali' },
-    'Binance': { number: 'ID: 000000000', owner: 'Binance Pay ID' },
-  };
-
-  let selectedPlan = -1;
-  let selectedMethod = 'Uzcard';
-
-  function selectPlan(idx) {
-    document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
-    document.querySelector(`[data-plan="${idx}"]`).classList.add('selected');
-    selectedPlan = idx;
-    const btn = document.getElementById('btn-continue');
-    btn.disabled = false;
-    btn.textContent = `Davom etish →`;
-  }
-
-  function goToPayment() {
-    if (selectedPlan < 0) return;
-    const p = plans[selectedPlan];
-    document.getElementById('pay-plan-name').textContent = p.name;
-    document.getElementById('pay-plan-price').innerHTML = p.price + ' <span>so\'m</span>';
-    updateCard();
-    showPage('page-payment');
-  }
-
-  function selectMethod(el, method) {
-    document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-    selectedMethod = method;
-    updateCard();
-  }
-
-  function updateCard() {
-    const d = cardData[selectedMethod];
-    document.getElementById('card-number').textContent = d.number;
-    document.getElementById('card-owner').textContent = 'Karta egasi: ' + d.owner;
-  }
-
-  function copyCard() {
-    const num = document.getElementById('card-number').textContent.replace(/\s/g,'');
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(num).then(() => {
-        const btn = document.querySelector('.copy-btn');
-        btn.textContent = '✅ Nusxalandi!';
-        setTimeout(() => btn.textContent = '📋 Raqamni nusxalash', 2000);
-      });
-    }
-  }
-
-  function goToSuccess() {
-    showPage('page-success');
-    if (window.Telegram && window.Telegram.WebApp) {
-      Telegram.WebApp.close();
-    }
-  }
-
-  function goBack() { showPage('page-plans'); }
-
-  function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    window.scrollTo(0,0);
-  }
+function show(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
 </script>
 </body>
 </html>
+HTMLEOF
+echo "Done"
