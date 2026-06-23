@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLOUDE VIP PREMIUM</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #080b14;
+    --surface: #0e1525;
+    --border: #1a2540;
+    --gold: #f0b429;
+    --gold2: #ffd700;
+    --blue: #0088cc;
+    --text: #e8eaf0;
+    --muted: #7a8aaa;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* PAGES */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: flex; flex-direction: column; }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    padding: 32px 20px 20px;
+    position: relative;
+  }
+  .crown {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 16px rgba(240,180,41,0.6));
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { filter: drop-shadow(0 0 16px rgba(240,180,41,0.4)); }
+    50% { filter: drop-shadow(0 0 28px rgba(240,180,41,0.9)); }
+  }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #f0b429, #ffd700, #f0b429);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── PLANS ── */
+  .plans {
+    padding: 8px 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+
+  .plan-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .plan-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(240,180,41,0.04), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .plan-card:active { transform: scale(0.98); }
+  .plan-card.selected {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 1px var(--gold), 0 4px 20px rgba(240,180,41,0.15);
+  }
+  .plan-card.selected::before { opacity: 1; }
+  .plan-card.popular {
+    border-color: #1a3a5c;
+  }
+
+  .popular-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--blue);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+  .vip-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: linear-gradient(135deg, #b8860b, var(--gold));
+    color: #000;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  .plan-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .plan-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .plan-duration {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .plan-price {
+    text-align: right;
+  }
+  .plan-price .amount {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--gold);
+  }
+  .plan-price .currency {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .plan-perday {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+    margin-top: 2px;
+  }
+
+  .plan-features {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .feature-tag {
+    background: rgba(255,255,255,0.05);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .radio-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    margin-right: 14px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .plan-card.selected .radio-dot {
+    border-color: var(--gold);
+    background: var(--gold);
+  }
+  .plan-card.selected .radio-dot::after {
+    content: '';
+    width: 8px; height: 8px;
+    background: #000;
+    border-radius: 50%;
+  }
+
+  /* ── BUTTON ── */
+  .btn-wrap { padding: 0 16px 32px; }
+  .btn-main {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #c89a20, var(--gold), #c89a20);
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #000;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    box-shadow: 0 4px 20px rgba(240,180,41,0.3);
+  }
+  .btn-main:active { transform: scale(0.98); opacity: 0.9; }
+  .btn-main:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── PAYMENT PAGE ── */
+  .pay-header {
+    padding: 24px 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .back-btn {
+    width: 36px; height: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .pay-title { font-size: 18px; font-weight: 700; }
+
+  .order-box {
+    margin: 20px 16px 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+  }
+  .order-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .order-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .order-price-big { font-size: 32px; font-weight: 800; color: var(--gold); }
+  .order-price-big span { font-size: 14px; color: var(--muted); font-weight: 400; }
+
+  .methods-title {
+    margin: 24px 16px 10px;
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .methods {
+    margin: 0 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .method-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 12px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    text-align: center;
+  }
+  .method-card.selected { border-color: var(--gold); }
+  .method-card.selected .method-name { color: var(--gold); }
+  .method-icon { font-size: 24px; margin-bottom: 4px; }
+  .method-name { font-size: 13px; font-weight: 600; }
+
+  .card-box {
+    margin: 20px 16px 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+  }
+  .card-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .card-number {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: var(--text);
+    font-family: 'Courier New', monospace;
+    word-break: break-all;
+  }
+  .card-owner { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .copy-btn {
+    margin-top: 12px;
+    width: 100%;
+    padding: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .copy-btn:active { background: rgba(255,255,255,0.1); }
+
+  .steps-box {
+    margin: 16px 16px 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 20px;
+  }
+  .steps-title { font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(--muted); }
+  .step { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+  .step-num {
+    width: 24px; height: 24px;
+    background: var(--blue);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step-text { font-size: 13px; color: var(--muted); line-height: 1.5; padding-top: 3px; }
+
+  /* ── SUCCESS PAGE ── */
+  .success-page {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh;
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .success-icon { font-size: 72px; margin-bottom: 20px; animation: bounce 0.6s ease; }
+  @keyframes bounce {
+    0% { transform: scale(0); }
+    60% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  .success-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+  .success-sub { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+  .divider { height: 1px; background: var(--border); margin: 0 16px; }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: TARIF TANLASH -->
+<div class="page active" id="page-plans">
+  <div class="header">
+    <span class="crown">👑</span>
+    <h1>CLOUDE VIP PREMIUM</h1>
+    <p>Yopiq VIP kanalga kirish imkoniyati</p>
+  </div>
+
+  <div class="plans">
+    <div class="plan-card" data-plan="0" onclick="selectPlan(0)">
+      <div class="plan-row">
+        <div style="display:flex;align-items:center">
+          <div class="radio-dot"></div>
+          <div>
+            <div class="plan-name">🌙 Yarim oy</div>
+            <div class="plan-duration">15 kunlik kirish</div>
+          </div>
+        </div>
+        <div class="plan-price">
+          <div class="amount">30 000</div>
+          <div class="currency">so'm</div>
+          <div class="plan-perday">~2 000/kun</div>
+        </div>
+      </div>
+      <div class="plan-features">
+        <span class="feature-tag">✓ VIP kanal</span>
+        <span class="feature-tag">✓ Eksklyuziv kontent</span>
+      </div>
+    </div>
+
+    <div class="plan-card popular" data-plan="1" onclick="selectPlan(1)">
+      <span class="popular-badge">MASHHUR</span>
+      <div class="plan-row">
+        <div style="display:flex;align-items:center">
+          <div class="radio-dot"></div>
+          <div>
+            <div class="plan-name">💎 1 Oylik</div>
+            <div class="plan-duration">30 kunlik kirish</div>
+          </div>
+        </div>
+        <div class="plan-price">
+          <div class="amount">60 000</div>
+          <div class="currency">so'm</div>
+          <div class="plan-perday">~2 000/kun</div>
+        </div>
+      </div>
+      <div class="plan-features">
+        <span class="feature-tag">✓ VIP kanal</span>
+        <span class="feature-tag">✓ Eksklyuziv kontent</span>
+        <span class="feature-tag">✓ Prioritet</span>
+      </div>
+    </div>
+
+    <div class="plan-card" data-plan="2" onclick="selectPlan(2)">
+      <div class="plan-row">
+        <div style="display:flex;align-items:center">
+          <div class="radio-dot"></div>
+          <div>
+            <div class="plan-name">🏆 1 Sezon</div>
+            <div class="plan-duration">3 oylik kirish</div>
+          </div>
+        </div>
+        <div class="plan-price">
+          <div class="amount">100 000</div>
+          <div class="currency">so'm</div>
+          <div class="plan-perday">~1 111/kun</div>
+        </div>
+      </div>
+      <div class="plan-features">
+        <span class="feature-tag">✓ VIP kanal</span>
+        <span class="feature-tag">✓ Barcha kontent</span>
+        <span class="feature-tag">✓ Bonus materiallar</span>
+      </div>
+    </div>
+
+    <div class="plan-card" data-plan="3" onclick="selectPlan(3)">
+      <span class="vip-badge">⭐ VIP</span>
+      <div class="plan-row">
+        <div style="display:flex;align-items:center">
+          <div class="radio-dot"></div>
+          <div>
+            <div class="plan-name">👑 VIP Sezon</div>
+            <div class="plan-duration">To'liq VIP paket</div>
+          </div>
+        </div>
+        <div class="plan-price">
+          <div class="amount">299 000</div>
+          <div class="currency">so'm</div>
+          <div class="plan-perday">Eng to'liq</div>
+        </div>
+      </div>
+      <div class="plan-features">
+        <span class="feature-tag">✓ Hamma narsa</span>
+        <span class="feature-tag">✓ VIP status</span>
+        <span class="feature-tag">✓ Shaxsiy murojaat</span>
+        <span class="feature-tag">✓ Maxsus imtiyozlar</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-wrap">
+    <button class="btn-main" id="btn-continue" disabled onclick="goToPayment()">
+      Tarifni tanlang
+    </button>
+  </div>
+</div>
+
+<!-- PAGE 2: TO'LOV -->
+<div class="page" id="page-payment">
+  <div class="pay-header">
+    <div class="back-btn" onclick="goBack()">←</div>
+    <div class="pay-title">To'lov</div>
+  </div>
+
+  <div class="order-box">
+    <div class="order-label">Tanlangan tarif</div>
+    <div class="order-name" id="pay-plan-name">—</div>
+    <div class="order-price-big" id="pay-plan-price">— <span>so'm</span></div>
+  </div>
+
+  <div class="methods-title">To'lov usulini tanlang</div>
+  <div class="methods">
+    <div class="method-card selected" onclick="selectMethod(this,'Uzcard')">
+      <div class="method-icon">🏦</div>
+      <div class="method-name">Uzcard</div>
+    </div>
+    <div class="method-card" onclick="selectMethod(this,'Visa')">
+      <div class="method-icon">💠</div>
+      <div class="method-name">Visa</div>
+    </div>
+    <div class="method-card" onclick="selectMethod(this,'Click')">
+      <div class="method-icon">⚡</div>
+      <div class="method-name">Click</div>
+    </div>
+    <div class="method-card" onclick="selectMethod(this,'Binance')">
+      <div class="method-icon">🟡</div>
+      <div class="method-name">Binance</div>
+    </div>
+  </div>
+
+  <div class="card-box">
+    <div class="card-label">Quyidagi kartaga o'tkazing:</div>
+    <div class="card-number" id="card-number">0000 0000 0000 0000</div>
+    <div class="card-owner" id="card-owner">Karta egasi: —</div>
+    <button class="copy-btn" onclick="copyCard()">📋 Raqamni nusxalash</button>
+  </div>
+
+  <div class="steps-box">
+    <div class="steps-title">QANDAY TO'LASH KERAK</div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text">Yuqoridagi kartaga aniq summani o'tkazing</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text">To'lov chekining <strong>skrinshot</strong>ini oling</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text">Skrinshoni botga yuboring va tasdiqlashni kuting</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text">Admin tasdiqlashi bilan VIP kanalga qo'shilasiz ✅</div>
+    </div>
+  </div>
+
+  <div class="btn-wrap" style="margin-top:20px">
+    <button class="btn-main" onclick="goToSuccess()">
+      ✅ To'lov qildim — Skrinshot yuboraman
+    </button>
+  </div>
+</div>
+
+<!-- PAGE 3: SUCCESS -->
+<div class="page" id="page-success">
+  <div class="success-page">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">Rahmat!</div>
+    <div class="success-sub">
+      To'lov skrinshoti botga yuboring.<br><br>
+      Admin <strong>24 soat ichida</strong> tasdiqlaydi<br>
+      va siz VIP kanalga qo'shilasiz! 👑
+    </div>
+  </div>
+</div>
+
+<script>
+  // Telegram WebApp init
+  if (window.Telegram && window.Telegram.WebApp) {
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand();
+  }
+
+  const plans = [
+    { name: '🌙 Yarim oy (15 kun)', price: '30 000', raw: '30000' },
+    { name: '💎 1 Oylik (30 kun)', price: '60 000', raw: '60000' },
+    { name: '🏆 1 Sezon (3 oy)', price: '100 000', raw: '100000' },
+    { name: '👑 VIP Sezon', price: '299 000', raw: '299000' },
+  ];
+
+  // Karta raqamlari — keyinroq o'zgartirasiz
+  const cardData = {
+    'Uzcard':  { number: '8600 0000 0000 0000', owner: 'Ism Familiya' },
+    'Visa':    { number: '4111 0000 0000 0000', owner: 'Ism Familiya' },
+    'Click':   { number: '8600 0000 0000 0000', owner: 'Click orqali' },
+    'Binance': { number: 'ID: 000000000', owner: 'Binance Pay ID' },
+  };
+
+  let selectedPlan = -1;
+  let selectedMethod = 'Uzcard';
+
+  function selectPlan(idx) {
+    document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+    document.querySelector(`[data-plan="${idx}"]`).classList.add('selected');
+    selectedPlan = idx;
+    const btn = document.getElementById('btn-continue');
+    btn.disabled = false;
+    btn.textContent = `Davom etish →`;
+  }
+
+  function goToPayment() {
+    if (selectedPlan < 0) return;
+    const p = plans[selectedPlan];
+    document.getElementById('pay-plan-name').textContent = p.name;
+    document.getElementById('pay-plan-price').innerHTML = p.price + ' <span>so\'m</span>';
+    updateCard();
+    showPage('page-payment');
+  }
+
+  function selectMethod(el, method) {
+    document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedMethod = method;
+    updateCard();
+  }
+
+  function updateCard() {
+    const d = cardData[selectedMethod];
+    document.getElementById('card-number').textContent = d.number;
+    document.getElementById('card-owner').textContent = 'Karta egasi: ' + d.owner;
+  }
+
+  function copyCard() {
+    const num = document.getElementById('card-number').textContent.replace(/\s/g,'');
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(num).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = '✅ Nusxalandi!';
+        setTimeout(() => btn.textContent = '📋 Raqamni nusxalash', 2000);
+      });
+    }
+  }
+
+  function goToSuccess() {
+    showPage('page-success');
+    if (window.Telegram && window.Telegram.WebApp) {
+      Telegram.WebApp.close();
+    }
+  }
+
+  function goBack() { showPage('page-plans'); }
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+  }
+</script>
+</body>
+</html>
