@@ -1,0 +1,35 @@
+body {
+    margin: 0;
+    background: #0f0f0f;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    padding: 20px;
+    text-align: center;
+}
+
+.card {
+    background: #1c1c1c;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 15px;
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    background: #111;
+    padding: 10px 0;
+}
+
+.bottom-nav button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 14px;
+}
