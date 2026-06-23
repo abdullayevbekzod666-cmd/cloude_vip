@@ -2,543 +2,362 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CLOUDE VIP PREMIUM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>VIP Bot</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
-    background: #0c0f17;
-    color: #e8eaf0;
-    padding: 20px 16px 40px;
-    min-height: 100vh;
-  }
-  .crown { text-align: center; font-size: 40px; margin-bottom: 6px; }
-  h1 {
-    text-align: center;
-    color: #f5c542;
-    font-size: 26px;
-    letter-spacing: 1px;
-    margin-bottom: 6px;
-  }
-  .subtitle { text-align: center; color: #8a8fa3; font-size: 14px; margin-bottom: 24px; }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { background: #0a0a0a; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; overflow-x: hidden; }
 
-  .plan {
-    background: #131726;
-    border: 1.5px solid #232838;
-    border-radius: 16px;
-    padding: 18px;
-    margin-bottom: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    cursor: pointer;
-    transition: border-color .15s;
-  }
-  .plan.selected { border-color: #f5c542; }
-  .plan-left { display: flex; gap: 12px; }
-  .radio {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    border: 2px solid #3a3f54;
-    margin-top: 2px;
-    flex-shrink: 0;
-    position: relative;
-  }
-  .plan.selected .radio { border-color: #f5c542; }
-  .plan.selected .radio::after {
-    content: '';
-    position: absolute; inset: 4px;
-    border-radius: 50%;
-    background: #f5c542;
-  }
-  .plan-title { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
-  .plan-desc { font-size: 13px; color: #8a8fa3; margin-bottom: 10px; }
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tag {
-    font-size: 11.5px; color: #9aa0b4;
-    background: #1b2030; border-radius: 8px;
-    padding: 4px 9px;
-  }
-  .plan-right { text-align: right; flex-shrink: 0; padding-left: 10px; }
-  .price { font-size: 19px; font-weight: 800; color: #f5c542; }
-  .price-sub { font-size: 12px; color: #6f7488; }
-  .badge {
-    position: absolute; top: -10px; right: 14px;
-    font-size: 10.5px; font-weight: 700;
-    padding: 3px 10px; border-radius: 20px;
-    color: #0c0f17;
-  }
-  .badge.popular { background: #4aa3ff; }
-  .badge.vip { background: #f5c542; }
-  .plan { position: relative; }
+  /* PAGES */
+  .page { display: none; flex-direction: column; min-height: calc(100vh - 70px); padding: 16px; }
+  .page.active { display: flex; }
 
-  .cta {
-    width: 100%; padding: 16px;
-    background: linear-gradient(135deg,#f5c542,#e0a52c);
-    border: none; border-radius: 14px;
-    color: #1c1404; font-size: 16px; font-weight: 800;
-    margin-top: 10px;
-    cursor: pointer;
-  }
+  /* HEADER */
+  .page-header { font-size: 22px; font-weight: 700; color: #FFD700; margin-bottom: 18px; letter-spacing: 0.5px; }
 
-  .screen { display: none; }
-  .screen.active { display: block; }
-  .back-btn {
-    background: none; border: none; color: #8a8fa3;
-    font-size: 15px; margin-bottom: 16px; padding: 6px 0;
-    cursor: pointer;
-  }
-  .summary {
-    background: #131726; border-radius: 14px; padding: 16px;
-    margin-bottom: 18px; text-align: center;
-  }
-  .summary .label { font-size: 12px; color: #8a8fa3; }
-  .summary .name { font-size: 17px; font-weight: 700; margin: 4px 0; }
-  .summary .amount { font-size: 24px; font-weight: 800; color: #f5c542; }
+  /* BOTTOM NAV */
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #111; border-top: 1px solid #222; display: flex; z-index: 100; padding-bottom: env(safe-area-inset-bottom); }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 4px 8px; cursor: pointer; transition: 0.2s; }
+  .nav-item svg { width: 22px; height: 22px; fill: #555; transition: 0.2s; }
+  .nav-item span { font-size: 10px; color: #555; margin-top: 4px; transition: 0.2s; font-weight: 500; }
+  .nav-item.active svg { fill: #FFD700; }
+  .nav-item.active span { color: #FFD700; }
 
-  .section-label { font-size: 12px; color: #8a8fa3; letter-spacing: 1px; margin: 18px 0 10px; }
-  .methods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .method {
-    background: #131726; border: 1.5px solid #232838;
-    border-radius: 14px; padding: 18px 0; text-align: center;
-    font-size: 14px; font-weight: 600;
-    cursor: pointer;
-  }
-  .method.selected { border-color: #f5c542; }
-  .method .icon { font-size: 26px; display:block; margin-bottom: 8px; }
+  /* CARDS */
+  .card { background: #1a1a1a; border-radius: 14px; padding: 16px; margin-bottom: 12px; border: 1px solid #2a2a2a; }
+  .card-row { display: flex; align-items: center; gap: 12px; }
 
-  .card-box {
-    background: #131726; border-radius: 14px; padding: 18px; margin-top: 16px;
-  }
-  .card-box .label { font-size: 12px; color: #8a8fa3; margin-bottom: 8px; }
-  .card-number {
-    font-size: 22px; font-weight: 700; letter-spacing: 2px; margin-bottom: 4px;
-  }
-  .card-owner { font-size: 13px; color: #8a8fa3; margin-bottom: 12px; }
-  .copy-btn {
-    width: 100%; padding: 12px; background: #1b2030; border: none;
-    border-radius: 10px; color: #e8eaf0; font-size: 14px;
-    cursor: pointer;
-  }
+  /* VIP PAGE */
+  .vip-banner { background: linear-gradient(135deg, #b8860b, #FFD700, #b8860b); border-radius: 16px; padding: 20px; margin-bottom: 20px; text-align: center; }
+  .vip-banner h2 { color: #000; font-size: 20px; font-weight: 800; }
+  .vip-banner p { color: #333; font-size: 13px; margin-top: 4px; }
+  .vip-plans { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .vip-plan { background: #1a1a1a; border: 2px solid #2a2a2a; border-radius: 14px; padding: 16px; text-align: center; cursor: pointer; transition: 0.2s; position: relative; }
+  .vip-plan:hover, .vip-plan.selected { border-color: #FFD700; background: #1e1c00; }
+  .vip-plan.popular::before { content: "🔥 Mashhur"; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #FFD700; color: #000; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+  .vip-plan .duration { font-size: 14px; font-weight: 700; color: #FFD700; }
+  .vip-plan .price { font-size: 20px; font-weight: 800; color: #fff; margin: 6px 0; }
+  .vip-plan .price span { font-size: 12px; color: #888; }
+  .vip-plan-full { background: #1a1a1a; border: 2px solid #2a2a2a; border-radius: 14px; padding: 16px; text-align: center; cursor: pointer; transition: 0.2s; margin-bottom: 12px; }
+  .vip-plan-full:hover { border-color: #FFD700; background: #1e1c00; }
+  .vip-plan-full .duration { font-size: 14px; font-weight: 700; color: #FFD700; }
+  .vip-plan-full .price { font-size: 22px; font-weight: 800; color: #fff; margin: 4px 0; }
+  .vip-features { list-style: none; margin: 12px 0; text-align: left; }
+  .vip-features li { font-size: 12px; color: #aaa; padding: 3px 0; }
+  .vip-features li::before { content: "✅ "; }
+  .pay-btn { width: 100%; background: #FFD700; color: #000; border: none; border-radius: 14px; padding: 16px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 8px; }
+  .pay-btn:active { opacity: 0.85; transform: scale(0.98); }
 
-  .steps-box {
-    background: #131726; border-radius: 14px; padding: 18px; margin-top: 16px;
-  }
-  .steps-box .title { font-size: 13px; color: #8a8fa3; letter-spacing: .5px; margin-bottom: 14px; }
-  .step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
-  .step:last-child { margin-bottom: 0; }
-  .step-num {
-    width: 24px; height: 24px; border-radius: 50%;
-    background: #2a72e8; color: #fff; font-size: 12px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-  .step-text { font-size: 14px; color: #cfd2dc; padding-top: 2px; }
+  /* Payment methods inside profile */
+  .pay-method { background: #1a1a1a; border: 1.5px solid #2a2a2a; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; gap: 14px; transition: 0.2s; }
+  .pay-method:hover { border-color: #FFD700; }
+  .pay-method .icon { font-size: 26px; }
+  .pay-method .info h4 { font-size: 14px; font-weight: 700; color: #fff; }
+  .pay-method .info p { font-size: 12px; color: #888; margin-top: 2px; }
+  .pay-method .arrow { margin-left: auto; color: #555; }
 
-  .pay-btn {
-    width: 100%; padding: 17px; margin-top: 20px;
-    background: linear-gradient(135deg,#f5c542,#e0a52c);
-    border: none; border-radius: 14px;
-    color: #1c1404; font-size: 16px; font-weight: 800;
-    cursor: pointer;
-  }
+  /* REFERRAL PAGE */
+  .ref-link-box { background: #1a1a1a; border: 1.5px solid #FFD700; border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; }
+  .ref-link-box p { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .ref-link-row { display: flex; align-items: center; gap: 8px; }
+  .ref-link-row span { font-size: 13px; color: #FFD700; flex: 1; word-break: break-all; }
+  .copy-btn { background: #FFD700; color: #000; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .ref-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .stat-box { background: #1a1a1a; border-radius: 12px; padding: 14px; text-align: center; border: 1px solid #2a2a2a; }
+  .stat-box .num { font-size: 26px; font-weight: 800; color: #FFD700; }
+  .stat-box .label { font-size: 11px; color: #888; margin-top: 4px; }
+  .discount-card { background: #1a1a1a; border-radius: 14px; padding: 16px; margin-bottom: 10px; border-left: 3px solid #FFD700; }
+  .discount-card .tier { font-size: 13px; font-weight: 700; color: #FFD700; margin-bottom: 4px; }
+  .discount-card .desc { font-size: 12px; color: #aaa; line-height: 1.5; }
+  .share-btn { width: 100%; background: linear-gradient(135deg, #229ED9, #1a7fc1); color: #fff; border: none; border-radius: 14px; padding: 15px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .share-btn:active { opacity: 0.85; }
 
-  /* SUCCESS SCREEN */
-  .success-wrap { text-align: center; padding-top: 40px; }
-  .success-emoji { font-size: 56px; margin-bottom: 18px; }
-  .success-title { font-size: 22px; font-weight: 800; margin-bottom: 14px; color: #f5c542; }
-  .success-text { font-size: 15px; color: #cfd2dc; line-height: 1.6; margin-bottom: 28px; }
-  .code-box {
-    background: #131726; border: 1.5px solid #f5c542;
-    border-radius: 14px; padding: 18px; margin-bottom: 16px;
-  }
-  .code-label { font-size: 12px; color: #8a8fa3; margin-bottom: 8px; }
-  .code-value {
-    font-size: 28px; font-weight: 800; letter-spacing: 3px; color: #f5c542;
-    margin-bottom: 14px;
-  }
-  /* --- YANGI: kod nusxalash tugmasi --- */
-  .copy-code-btn {
-    width: 100%; padding: 13px;
-    background: #f5c542;
-    border: none; border-radius: 10px;
-    color: #1c1404; font-size: 15px; font-weight: 800;
-    cursor: pointer;
-  }
-  .copy-code-btn.copied {
-    background: #2ecc71;
-    color: #fff;
-  }
+  /* TOP PLAYERS */
+  .top-header { background: linear-gradient(135deg, #1a1a00, #2a2600); border-radius: 16px; padding: 16px; margin-bottom: 16px; text-align: center; border: 1px solid #3a3400; }
+  .top-header h3 { color: #FFD700; font-size: 16px; font-weight: 700; }
+  .top-header p { font-size: 12px; color: #aaa; margin-top: 4px; }
+  .prizes { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .prize-box { background: #1a1a1a; border-radius: 12px; padding: 12px 8px; text-align: center; border: 1px solid #2a2a2a; }
+  .prize-box.gold { border-color: #FFD700; background: #1e1c00; }
+  .prize-box.silver { border-color: #C0C0C0; background: #1a1a1a; }
+  .prize-box.bronze { border-color: #CD7F32; background: #1a1000; }
+  .prize-box .medal { font-size: 22px; }
+  .prize-box .place { font-size: 11px; color: #888; margin: 4px 0; }
+  .prize-box .uc { font-size: 16px; font-weight: 800; }
+  .prize-box.gold .uc { color: #FFD700; }
+  .prize-box.silver .uc { color: #C0C0C0; }
+  .prize-box.bronze .uc { color: #CD7F32; }
+  .player-item { background: #1a1a1a; border-radius: 12px; padding: 13px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; border: 1px solid #2a2a2a; }
+  .player-item.rank-1 { border-color: #FFD700; background: #1e1c00; }
+  .player-item.rank-2 { border-color: #C0C0C0; background: #1a1a1a; }
+  .player-item.rank-3 { border-color: #CD7F32; background: #1a1000; }
+  .player-rank { font-size: 16px; font-weight: 800; width: 30px; text-align: center; }
+  .player-rank.gold { color: #FFD700; }
+  .player-rank.silver { color: #C0C0C0; }
+  .player-rank.bronze { color: #CD7F32; }
+  .player-rank.iron { color: #666; }
+  .player-avatar { width: 38px; height: 38px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .player-name { flex: 1; font-size: 14px; font-weight: 600; color: #fff; }
+  .player-refs { font-size: 13px; font-weight: 700; color: #FFD700; }
+  .player-refs span { font-size: 10px; color: #888; font-weight: 400; }
 
-  .timer-box {
-    background: #1b1208; border: 1px solid #4a3010;
-    border-radius: 12px; padding: 14px; margin-bottom: 20px;
-  }
-  .timer-label { font-size: 12px; color: #d9a04a; margin-bottom: 4px; }
-  .timer-value { font-size: 20px; font-weight: 700; color: #f5c542; }
-  .expired-box {
-    background: #1f1010; border: 1px solid #5a1a1a;
-    border-radius: 12px; padding: 16px; margin-bottom: 20px;
-  }
-  .expired-box .t { color: #ff6b6b; font-weight: 700; font-size: 15px; margin-bottom: 4px; }
-  .expired-box .s { color: #b08a8a; font-size: 13px; }
-  .retry-btn {
-    width: 100%; padding: 15px;
-    background: #1b2030; border: 1px solid #2a3050;
-    border-radius: 14px; color: #e8eaf0; font-size: 15px; font-weight: 700;
-    cursor: pointer; margin-top: 10px;
-  }
+  /* PROFILE PAGE */
+  .profile-top { background: #1a1a1a; border-radius: 16px; padding: 20px; margin-bottom: 16px; border: 1px solid #2a2a2a; }
+  .profile-avatar-row { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+  .profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #FFD700, #b8860b); display: flex; align-items: center; justify-content: center; font-size: 28px; border: 3px solid #FFD700; overflow: hidden; }
+  .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .profile-name { font-size: 17px; font-weight: 700; color: #fff; }
+  .profile-url { font-size: 12px; color: #FFD700; margin-top: 2px; }
+  .profile-status { font-size: 11px; color: #4CAF50; margin-top: 3px; }
+  .profile-field { background: #111; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+  .profile-field .lbl { font-size: 11px; color: #666; margin-bottom: 3px; }
+  .profile-field .val { font-size: 15px; font-weight: 600; color: #fff; }
+  .balance-row { display: flex; align-items: center; gap: 12px; background: #111; border-radius: 12px; padding: 14px; margin-bottom: 8px; }
+  .balance-icon { width: 38px; height: 38px; background: #2a2600; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .balance-info .lbl { font-size: 11px; color: #888; }
+  .balance-info .val { font-size: 18px; font-weight: 800; color: #FFD700; }
+  .balance-arrow { margin-left: auto; color: #555; font-size: 18px; }
+  .section-title { font-size: 14px; font-weight: 700; color: #888; margin: 16px 0 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .profile-menu-item { background: #1a1a1a; border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; border: 1px solid #2a2a2a; transition: 0.2s; }
+  .profile-menu-item:hover { border-color: #FFD700; }
+  .pmi-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .pmi-text h4 { font-size: 14px; font-weight: 600; color: #fff; }
+  .pmi-text p { font-size: 11px; color: #888; margin-top: 2px; }
+  .pmi-arrow { margin-left: auto; color: #555; font-size: 16px; }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; align-items: flex-end; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: #141414; border-radius: 24px 24px 0 0; padding: 24px 20px; width: 100%; max-height: 80vh; overflow-y: auto; border-top: 1px solid #2a2a2a; animation: slideUp 0.3s ease; }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-handle { width: 40px; height: 4px; background: #333; border-radius: 2px; margin: 0 auto 20px; }
+  .modal-title { font-size: 18px; font-weight: 800; color: #FFD700; margin-bottom: 16px; }
+  .modal-close { float: right; background: #2a2a2a; border: none; color: #fff; border-radius: 50%; width: 28px; height: 28px; font-size: 14px; cursor: pointer; }
+
+  /* TOAST */
+  .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px); background: #FFD700; color: #000; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 700; z-index: 999; transition: 0.3s; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .divider { height: 1px; background: #222; margin: 12px 0; }
+  .badge { display: inline-block; background: #2a2600; color: #FFD700; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; border: 1px solid #FFD700; }
 </style>
 </head>
 <body>
 
-<!-- SCREEN 1: PLANS -->
-<div class="screen active" id="screen-plans">
-  <div class="crown">👑</div>
-  <h1>CLOUDE VIP PREMIUM</h1>
-  <div class="subtitle">Yopiq VIP kanalga kirish imkoniyati</div>
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
-  <div class="plan selected" data-plan="0" data-name="Yarim oy" data-price="30000" data-days="15">
-    <div class="plan-left">
-      <div class="radio"></div>
-      <div>
-        <div class="plan-title">🌙 Yarim oy</div>
-        <div class="plan-desc">15 kunlik kirish</div>
-        <div class="tags"><span class="tag">✓ VIP kanal</span><span class="tag">✓ Eksklyuziv kontent</span></div>
-      </div>
+<!-- ===== PAGE 1: VIP ===== -->
+<div class="page active" id="page-vip">
+  <div class="page-header">👑 VIP Obuna</div>
+
+  <div class="vip-banner">
+    <h2>🌟 VIP A'zo Bo'ling</h2>
+    <p>Eksklyuziv kontent va imtiyozlar sizni kutmoqda</p>
+  </div>
+
+  <div style="display:flex; gap:10px; margin-bottom:16px;">
+    <a href="https://t.me/+O1VMVyydnZA3OTRi" target="_blank" style="flex:1; background:linear-gradient(135deg,#1e1c00,#2a2600); border:1.5px solid #FFD700; border-radius:12px; padding:12px 10px; text-align:center; text-decoration:none;">
+      <div style="font-size:20px;">👑</div>
+      <div style="font-size:12px; font-weight:700; color:#FFD700; margin-top:4px;">VIP Kanal</div>
+      <div style="font-size:10px; color:#888; margin-top:2px;">A'zolar uchun</div>
+    </a>
+    <a href="https://t.me/CLOUDE_CHEATS" target="_blank" style="flex:1; background:#1a1a1a; border:1.5px solid #2a2a2a; border-radius:12px; padding:12px 10px; text-align:center; text-decoration:none;">
+      <div style="font-size:20px;">📢</div>
+      <div style="font-size:12px; font-weight:700; color:#fff; margin-top:4px;">Ochiq Kanal</div>
+      <div style="font-size:10px; color:#888; margin-top:2px;">Hammaga ochiq</div>
+    </a>
+  </div>
+
+  <div class="vip-plans">
+    <div class="vip-plan" onclick="selectPlan(this, '15kun', 29000)">
+      <div class="duration">⚡ 15 Kun</div>
+      <div class="price">29 000 <span>so'm</span></div>
+      <ul class="vip-features">
+        <li>Barcha VIP kontent</li>
+        <li>Tezkor kirish</li>
+      </ul>
     </div>
-    <div class="plan-right">
-      <div class="price">30 000</div>
-      <div class="price-sub">so'm</div>
-      <div class="price-sub">~2 000/kun</div>
+    <div class="vip-plan popular" onclick="selectPlan(this, '1oy', 49000)">
+      <div class="duration">🔥 1 Oy</div>
+      <div class="price">49 000 <span>so'm</span></div>
+      <ul class="vip-features">
+        <li>Barcha VIP kontent</li>
+        <li>Ustunlik</li>
+      </ul>
     </div>
   </div>
 
-  <div class="plan" data-plan="1" data-name="1 Oylik" data-price="60000" data-days="30">
-    <span class="badge popular">MASHHUR</span>
-    <div class="plan-left">
-      <div class="radio"></div>
-      <div>
-        <div class="plan-title">💎 1 Oylik</div>
-        <div class="plan-desc">30 kunlik kirish</div>
-        <div class="tags"><span class="tag">✓ VIP kanal</span><span class="tag">✓ Eksklyuziv kontent</span><span class="tag">✓ Prioritet</span></div>
-      </div>
-    </div>
-    <div class="plan-right">
-      <div class="price">60 000</div>
-      <div class="price-sub">so'm</div>
-      <div class="price-sub">~2 000/kun</div>
-    </div>
+  <div class="vip-plan-full" onclick="selectPlan(this, '1sezon', 89000)">
+    <div class="duration">🏆 1 Sezon (3 Oy)</div>
+    <div class="price">89 000 <span>so'm</span></div>
+    <ul class="vip-features" style="columns:2; list-style:none; padding:0; margin:8px 0;">
+      <li>✅ Barcha VIP kontent</li>
+      <li>✅ Ustunlik</li>
+      <li>✅ Maxsus chegirmalar</li>
+      <li>✅ Admin bilan bog'lanish</li>
+    </ul>
   </div>
 
-  <div class="plan" data-plan="2" data-name="1 Sezon" data-price="100000" data-days="90">
-    <div class="plan-left">
-      <div class="radio"></div>
-      <div>
-        <div class="plan-title">🏆 1 Sezon</div>
-        <div class="plan-desc">3 oylik kirish</div>
-        <div class="tags"><span class="tag">✓ VIP kanal</span><span class="tag">✓ Barcha kontent</span><span class="tag">✓ Bonus materiallar</span></div>
-      </div>
-    </div>
-    <div class="plan-right">
-      <div class="price">100 000</div>
-      <div class="price-sub">so'm</div>
-      <div class="price-sub">~1 111/kun</div>
-    </div>
-  </div>
-
-  <div class="plan" data-plan="3" data-name="VIP Sezon" data-price="299000" data-days="365">
-    <span class="badge vip">⭐ VIP</span>
-    <div class="plan-left">
-      <div class="radio"></div>
-      <div>
-        <div class="plan-title">👑 VIP Sezon</div>
-        <div class="plan-desc">To'liq VIP paket</div>
-        <div class="tags"><span class="tag">✓ Hamma narsa</span><span class="tag">✓ VIP status</span><span class="tag">✓ Shaxsiy murojaat</span><span class="tag">✓ Maxsus imtiyozlar</span></div>
-      </div>
-    </div>
-    <div class="plan-right">
-      <div class="price">299 000</div>
-      <div class="price-sub">so'm</div>
-      <div class="price-sub">Eng to'liq</div>
-    </div>
-  </div>
-
-  <button class="cta" id="continue-btn">Davom etish →</button>
+  <button class="pay-btn" onclick="showPayModal()">💳 To'lov Qilish</button>
 </div>
 
-<!-- SCREEN 2: PAYMENT -->
-<div class="screen" id="screen-payment">
-  <button class="back-btn" id="back-to-plans">← Orqaga</button>
+<!-- ===== PAGE 2: REFERRAL ===== -->
+<div class="page" id="page-ref">
+  <div class="page-header">🔗 Referral</div>
 
-  <div class="summary">
-    <div class="label">Tanlangan tarif</div>
-    <div class="name" id="sum-name">—</div>
-    <div class="amount" id="sum-price">— so'm</div>
+  <div class="ref-link-box">
+    <p>📢 Ochiq kanalimiz havolasi:</p>
+    <div class="ref-link-row">
+      <span id="refLink">https://t.me/CLOUDE_CHEATS</span>
+      <button class="copy-btn" onclick="copyRef()">Nusxa</button>
+    </div>
   </div>
 
-  <div class="section-label">TO'LOV USULINI TANLANG</div>
-  <div class="methods">
-    <div class="method selected" data-method="Uzcard"><span class="icon">🏦</span>Uzcard</div>
-    <div class="method" data-method="Visa"><span class="icon">💠</span>Visa</div>
-    <div class="method" data-method="Click"><span class="icon">⚡</span>Click</div>
-    <div class="method" data-method="Binance"><span class="icon">🟡</span>Binance</div>
+  <div class="ref-stats">
+    <div class="stat-box">
+      <div class="num" id="refCount">0</div>
+      <div class="label">Taklif qilinganlar</div>
+    </div>
+    <div class="stat-box">
+      <div class="num" id="discountVal">0%</div>
+      <div class="label">Chegirmangiz</div>
+    </div>
   </div>
 
-  <div class="card-box">
-    <div class="label">Quyidagi kartaga o'tkazing:</div>
-    <div class="card-number">8600 0000 0000 0000</div>
-    <div class="card-owner">Karta egasi: Ism Familiya</div>
-    <button class="copy-btn" id="copy-card-btn">📋 Raqamni nusxalash</button>
+  <div class="card" style="margin-bottom:14px;">
+    <div style="font-size:13px; font-weight:700; color:#FFD700; margin-bottom:10px;">📋 Qoidalar va Ko'rsatmalar</div>
+    <p style="font-size:12px; color:#aaa; line-height:1.6;">Bu havolani do'stlaringizga, guruhlaringizga yuboring. Ular kanalga qo'shilsa, siz avtomatik chegirma olasiz! 🎉</p>
   </div>
 
-  <div class="steps-box">
-    <div class="title">QANDAY TO'LASH KERAK</div>
-    <div class="step"><div class="step-num">1</div><div class="step-text">Yuqoridagi kartaga aniq summani o'tkazing</div></div>
-    <div class="step"><div class="step-num">2</div><div class="step-text">To'lov chekining <b>skrinshot</b>ini oling</div></div>
-    <div class="step"><div class="step-num">3</div><div class="step-text">Pastdagi tugmani bosib, maxfiy kod oling</div></div>
-    <div class="step"><div class="step-num">4</div><div class="step-text">Skrinshot va kodni botga yuboring</div></div>
+  <div class="discount-card">
+    <div class="tier">🥉 10 ta taklif → 5% chegirma</div>
+    <div class="desc">10 nafar do'stingiz kanalga qo'shilsa, VIP obunangizga 5% chegirma kupon beriladi.</div>
+  </div>
+  <div class="discount-card" style="border-left-color:#C0C0C0;">
+    <div class="tier" style="color:#C0C0C0;">🥈 20 ta taklif → 10% chegirma</div>
+    <div class="desc">20 nafar do'stingiz qo'shilsa, VIP obunangizga 10% chegirma kupon beriladi.</div>
+  </div>
+  <div class="discount-card" style="border-left-color:#FFD700;">
+    <div class="tier">🥇 30 ta taklif → 15% chegirma</div>
+    <div class="desc">30 nafar do'stingiz qo'shilsa, VIP obunangizga 15% chegirma kupon beriladi. Eng katta imtiyoz!</div>
   </div>
 
-  <button class="pay-btn" id="pay-btn">✅ To'lov qildim — Kod olish</button>
+  <button class="share-btn" onclick="shareLink()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+    Havolani Ulashish
+  </button>
 </div>
 
-<!-- SCREEN 3: SUCCESS / CODE -->
-<div class="screen" id="screen-success">
-  <div class="success-wrap">
-    <div class="success-emoji">🎉</div>
-    <div class="success-title">Sizning kodingiz</div>
+<!-- ===== PAGE 3: TOP PLAYERS ===== -->
+<div class="page" id="page-top">
+  <div class="page-header">🏆 Top O'yinchilar</div>
 
-    <div class="code-box" id="code-box">
-      <div class="code-label">Bu kodni botga skrinshot bilan birga yuboring</div>
-      <div class="code-value" id="code-value">----</div>
-      <button class="copy-code-btn" id="copy-code-btn">📋 Kodni nusxalash</button>
+  <div class="top-header">
+    <h3>🎮 Referral Reytingi</h3>
+    <p>Eng ko'p do'st taklif qilganlar reytingda yuqori o'rin egallaydi!</p>
+  </div>
+
+  <div class="prizes">
+    <div class="prize-box gold">
+      <div class="medal">🥇</div>
+      <div class="place">1-o'rin</div>
+      <div class="uc">120 UC</div>
     </div>
-
-    <div class="timer-box" id="timer-box">
-      <div class="timer-label">⏰ Kod amal qilish muddati</div>
-      <div class="timer-value" id="timer-value">03:00</div>
+    <div class="prize-box silver">
+      <div class="medal">🥈</div>
+      <div class="place">2-o'rin</div>
+      <div class="uc">90 UC</div>
     </div>
-
-    <div class="expired-box" id="expired-box" style="display:none;">
-      <div class="t">⏰ Vaqtingiz tugadi!</div>
-      <div class="s">To'lovingiz qabul qilinmadi. Iltimos, qaytadan urinib ko'ring.</div>
+    <div class="prize-box bronze">
+      <div class="medal">🥉</div>
+      <div class="place">3-o'rin</div>
+      <div class="uc">60 UC</div>
     </div>
+  </div>
 
-    <div class="success-text" id="success-text">
-      Kodni nusxalab, Telegram botga qaytib, to'lov skrinshotini va shu kodni birga yuboring.
+  <div id="playersList">
+    <div class="player-item rank-1">
+      <div class="player-rank gold">🥇</div>
+      <div class="player-avatar">👑</div>
+      <div class="player-name">Bekzod A.</div>
+      <div class="player-refs">142 <span>ref</span></div>
     </div>
+    <div class="player-item rank-2">
+      <div class="player-rank silver">🥈</div>
+      <div class="player-avatar">🌟</div>
+      <div class="player-name">Sherzod M.</div>
+      <div class="player-refs">98 <span>ref</span></div>
+    </div>
+    <div class="player-item rank-3">
+      <div class="player-rank bronze">🥉</div>
+      <div class="player-avatar">🔥</div>
+      <div class="player-name">Jasur T.</div>
+      <div class="player-refs">74 <span>ref</span></div>
+    </div>
+    <div class="player-item">
+      <div class="player-rank iron">4</div>
+      <div class="player-avatar">😎</div>
+      <div class="player-name">Nodir K.</div>
+      <div class="player-refs">51 <span>ref</span></div>
+    </div>
+    <div class="player-item">
+      <div class="player-rank iron">5</div>
+      <div class="player-avatar">⚡</div>
+      <div class="player-name">Dilnoza S.</div>
+      <div class="player-refs">38 <span>ref</span></div>
+    </div>
+    <div class="player-item">
+      <div class="player-rank iron">6</div>
+      <div class="player-avatar">🎯</div>
+      <div class="player-name">Kamol B.</div>
+      <div class="player-refs">22 <span>ref</span></div>
+    </div>
+    <div class="player-item">
+      <div class="player-rank iron">7</div>
+      <div class="player-avatar">💎</div>
+      <div class="player-name">Umida R.</div>
+      <div class="player-refs">17 <span>ref</span></div>
+    </div>
+  </div>
 
-    <button class="retry-btn" id="retry-btn" style="display:none;">🔄 Yangi kod olish</button>
-    <button class="retry-btn" id="goto-bot-btn">📤 Botga qaytish</button>
+  <div class="card" style="text-align:center; margin-top:8px;">
+    <p style="font-size:12px; color:#888;">Reytingda yuqoriga chiqish uchun ko'proq do'stlarni taklif qiling! <br><span style="color:#FFD700; font-weight:700;">Top 3 = PUBG UC sovg'a! 🎁</span></p>
   </div>
 </div>
 
-<script>
-const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-if (tg) { tg.ready(); tg.expand(); }
+<!-- ===== PAGE 4: PROFILE ===== -->
+<div class="page" id="page-profile">
+  <div class="page-header">👤 Profil</div>
 
-let selectedPlan = document.querySelector('.plan.selected');
-let selectedMethod = document.querySelector('.method.selected');
-let countdownInterval = null;
-const CODE_DURATION_MS = 3 * 60 * 1000; // ✅ 3 daqiqa
+  <div class="profile-top">
+    <div class="profile-avatar-row">
+      <div class="profile-avatar" id="profileAvatarBox">
+        <span id="profileAvatarEmoji">👤</span>
+      </div>
+      <div>
+        <div class="profile-name" id="profileName">Foydalanuvchi</div>
+        <div class="profile-url" id="profileUrl">@username</div>
+        <div class="profile-status">● Faol</div>
+      </div>
+    </div>
 
-// ---------- PLAN SELECTION ----------
-document.querySelectorAll('.plan').forEach(p => {
-  p.addEventListener('click', () => {
-    document.querySelectorAll('.plan').forEach(x => x.classList.remove('selected'));
-    p.classList.add('selected');
-    selectedPlan = p;
-  });
-});
+    <div class="profile-field">
+      <div class="lbl">User ID</div>
+      <div class="val" id="profileId">—</div>
+    </div>
 
-document.getElementById('continue-btn').addEventListener('click', () => {
-  document.getElementById('sum-name').textContent = selectedPlan.dataset.name;
-  document.getElementById('sum-price').textContent =
-    Number(selectedPlan.dataset.price).toLocaleString('ru-RU').replace(/,/g, ' ') + " so'm";
-  showScreen('screen-payment');
-});
+    <div class="balance-row" onclick="showTopupInfo()">
+      <div class="balance-icon">💰</div>
+      <div class="balance-info">
+        <div class="lbl">Balans</div>
+        <div class="val" id="balanceVal">0 so'm</div>
+      </div>
+      <div class="balance-arrow">›</div>
+    </div>
 
-document.getElementById('back-to-plans').addEventListener('click', () => showScreen('screen-plans'));
-
-// ---------- PAYMENT METHOD ----------
-document.querySelectorAll('.method').forEach(m => {
-  m.addEventListener('click', () => {
-    document.querySelectorAll('.method').forEach(x => x.classList.remove('selected'));
-    m.classList.add('selected');
-    selectedMethod = m;
-  });
-});
-
-// ---------- KARTA RAQAM NUSXALASH ----------
-document.getElementById('copy-card-btn').addEventListener('click', () => {
-  const btn = document.getElementById('copy-card-btn');
-  navigator.clipboard.writeText('8600000000000000').catch(() => {
-    // fallback
-    const el = document.createElement('textarea');
-    el.value = '8600000000000000';
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-  });
-  btn.textContent = '✅ Nusxalandi!';
-  setTimeout(() => btn.textContent = '📋 Raqamni nusxalash', 1500);
-});
-
-// ---------- KOD NUSXALASH (YANGI) ----------
-document.getElementById('copy-code-btn').addEventListener('click', () => {
-  const code = document.getElementById('code-value').textContent;
-  const btn = document.getElementById('copy-code-btn');
-  navigator.clipboard.writeText(code).catch(() => {
-    const el = document.createElement('textarea');
-    el.value = code;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-  });
-  btn.textContent = '✅ Nusxalandi!';
-  btn.classList.add('copied');
-  setTimeout(() => {
-    btn.textContent = '📋 Kodni nusxalash';
-    btn.classList.remove('copied');
-  }, 2000);
-});
-
-// ---------- TO'LOV & KOD YUBORISH ----------
-document.getElementById('pay-btn').addEventListener('click', () => {
-  startPaymentFlow();
-});
-
-document.getElementById('retry-btn').addEventListener('click', () => {
-  localStorage.removeItem('vip_code_data');
-  showScreen('screen-plans');
-});
-
-document.getElementById('goto-bot-btn').addEventListener('click', () => {
-  if (tg) tg.close();
-});
-
-function generateCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = 'VIP-';
-  for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
-  return code;
-}
-
-function startPaymentFlow() {
-  const existing = getStoredCodeData();
-  if (existing && existing.expiresAt > Date.now()) {
-    resumeCodeScreen(existing);
-    return;
-  }
-
-  const code = generateCode();
-  const expiresAt = Date.now() + CODE_DURATION_MS;
-  const data = {
-    code: code,
-    plan: selectedPlan.dataset.name,
-    price: selectedPlan.dataset.price,
-    days: selectedPlan.dataset.days,
-    method: selectedMethod ? selectedMethod.dataset.method : 'Uzcard',
-    expiresAt: expiresAt
-  };
-  localStorage.setItem('vip_code_data', JSON.stringify(data));
-
-  // ✅ Bot ga sendData — bot bu ma'lumotni oladi
-  if (tg) {
-    try {
-      tg.sendData(JSON.stringify({
-        type: 'vip_payment',
-        code: code,
-        plan: data.plan,
-        price: data.price,
-        days: data.days,
-        method: data.method,
-        user_id: tg.initDataUnsafe?.user?.id || null,
-        username: tg.initDataUnsafe?.user?.username || null
-      }));
-    } catch (e) {
-      console.log('sendData error:', e);
-    }
-  }
-
-  showCodeScreen(data);
-}
-
-function getStoredCodeData() {
-  try {
-    const raw = localStorage.getItem('vip_code_data');
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch (e) { return null; }
-}
-
-function showCodeScreen(data) {
-  document.getElementById('code-value').textContent = data.code;
-  document.getElementById('code-box').style.display = 'block';
-  document.getElementById('timer-box').style.display = 'block';
-  document.getElementById('expired-box').style.display = 'none';
-  document.getElementById('retry-btn').style.display = 'none';
-  document.getElementById('success-text').style.display = 'block';
-  document.getElementById('copy-code-btn').textContent = '📋 Kodni nusxalash';
-  document.getElementById('copy-code-btn').classList.remove('copied');
-  showScreen('screen-success');
-  startCountdown(data.expiresAt);
-}
-
-function resumeCodeScreen(data) {
-  showCodeScreen(data);
-}
-
-function startCountdown(expiresAt) {
-  if (countdownInterval) clearInterval(countdownInterval);
-
-  function tick() {
-    const remaining = expiresAt - Date.now();
-    if (remaining <= 0) {
-      clearInterval(countdownInterval);
-      onExpired();
-      return;
-    }
-    const totalSec = Math.floor(remaining / 1000);
-    const min = Math.floor(totalSec / 60);
-    const sec = totalSec % 60;
-    document.getElementById('timer-value').textContent =
-      `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-  }
-
-  tick();
-  countdownInterval = setInterval(tick, 1000);
-}
-
-function onExpired() {
-  document.getElementById('code-box').style.display = 'none';
-  document.getElementById('timer-box').style.display = 'none';
-  document.getElementById('expired-box').style.display = 'block';
-  document.getElementById('retry-btn').style.display = 'block';
-  document.getElementById('success-text').style.display = 'none';
-  localStorage.removeItem('vip_code_data');
-}
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-// Sahifa ochilganda saqlangan kod bo'lsa davom ettir
-window.addEventListener('load', () => {
-  const existing = getStoredCodeData();
-  if (existing) {
-    if (existing.expiresAt > Date.now()) {
-      resumeCodeScreen(existing);
-    } else {
-      localStorage.removeItem('vip_code_data');
-    }
-  }
-});
-</script>
-</body>
-   </html>
+    <div class="profile-menu-item" onclick="showTopupInfo()">
+      <div class="pmi-icon" style="background:#1e1c00;">💳</div>
+      <div class="pmi-text">
+      
