@@ -107,7 +107,7 @@ async def balance_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"💰 *Balansingiz:* {u['balance']:,} so'm\n"
         f"👥 *Referallar:* {u['refs']} ta\n"
         f"🎁 *Chegirma:* {discount}%\n"
-        f"🏅 *VIP status:* {u['vip'] or 'Yo'q'}\n\n"
+        f"🏅 *VIP status:* {u['vip'] or 'Yoq'}\n\n"
         f"Balansni to'ldirish uchun WebApp'ni oching."
     )
     keyboard = InlineKeyboardMarkup([
