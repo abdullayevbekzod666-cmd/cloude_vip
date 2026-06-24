@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CLOUDE VIP PREMIUM</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root{
+    --bg:#0B0E14;
+    --bg-elev:#11161F;
+    --card:#151B26;
+    --card-2:#1B2230;
+    --line:#252D3D;
+    --gold:#F5C518;
+    --gold-dim:#8a7415;
+    --silver:#C7CCD6;
+    --bronze:#CD7F32;
+    --text:#F2F4F7;
+    --text-dim:#8B93A1;
+    --green:#3DDC84;
+    --red:#FF5C5C;
+    --radius:18px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Manrope','Segoe UI',system-ui,sans-serif;
+    min-height:100vh;
+    padding-bottom:92px;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--gold); color:#000;}
+
+  /* ===== Top header ===== */
+  .topbar{
+    padding:18px 18px 14px;
+    background:linear-gradient(180deg, #11161F 0%, #0B0E14 100%);
+    border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:10;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{
+    width:38px; height:38px; border-radius:11px;
+    background:linear-gradient(135deg, var(--gold), #b88a00);
+    display:flex; align-items:center; justify-content:center;
+    font-size:19px;
+    box-shadow:0 4px 14px rgba(245,197,24,0.35);
+    flex-shrink:0;
+  }
+  .brand-text{font-weight:800; font-size:16.5px; letter-spacing:0.2px; line-height:1.15;}
+  .brand-text span{display:block; font-weight:600; font-size:11px; color:var(--gold); letter-spacing:1.5px; text-transform:uppercase; margin-top:1px;}
+  .balance-chip{
+    margin-left:auto;
+    background:var(--card); border:1px solid var(--line);
+    border-radius:30px; padding:7px 13px;
+    display:flex; align-items:center; gap:6px;
+    font-weight:700; font-size:13.5px;
+  }
+  .balance-chip .coin{font-size:14px;}
+
+  /* ===== Banner ===== */
+  .banner{
+    margin:14px 18px 0;
+    background:linear-gradient(135deg, var(--card-2), var(--card));
+    border:1px solid var(--gold-dim);
+    border-radius:14px;
+    padding:12px 14px;
+    font-size:13px;
+    line-height:1.5;
+    display:none;
+  }
+  .banner.show{display:block;}
+
+  /* ===== Screens ===== */
+  .screen{display:none; padding:18px; animation:fadeIn .25s ease;}
+  .screen.active{display:block;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  .section-title{font-size:21px; font-weight:800; margin:4px 0 4px; letter-spacing:-0.3px;}
+  .section-sub{color:var(--text-dim); font-size:13.5px; margin:0 0 18px; line-height:1.5;}
+
+  /* ===== VIP cards ===== */
+  .vip-card{
+    background:linear-gradient(155deg, var(--card-2) 0%, var(--card) 100%);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px; margin-bottom:14px;
+    position:relative; overflow:hidden;
+  }
+  .vip-card.featured{
+    border:1px solid var(--gold-dim);
+    box-shadow:0 0 0 1px rgba(245,197,24,0.15), 0 8px 24px rgba(245,197,24,0.08);
+  }
+  .vip-card .ribbon{
+    position:absolute; top:0; right:18px;
+    background:var(--gold); color:#1a1300;
+    font-size:10px; font-weight:800; letter-spacing:0.5px;
+    padding:4px 10px; border-radius:0 0 8px 8px; text-transform:uppercase;
+  }
+  .vip-card.featured, .vip-card.has-ribbon{padding-top:30px;}
+  .vip-row{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .vip-name{font-size:17px; font-weight:800;}
+  .vip-desc{color:var(--text-dim); font-size:12.5px; margin-top:3px; line-height:1.4;}
+  .vip-price{text-align:right; flex-shrink:0;}
+  .vip-price .num{font-size:19px; font-weight:800; color:var(--gold);}
+  .vip-price .unit{font-size:11px; color:var(--text-dim); display:block; margin-top:-2px;}
+  .vip-buy-btn{
+    width:100%; margin-top:14px;
+    background:var(--gold); color:#1a1300;
+    border:none; border-radius:13px; padding:12px;
+    font-weight:800; font-size:14.5px; cursor:pointer; font-family:inherit;
+  }
+  .vip-buy-btn:active{transform:scale(0.98);}
+
+  .info-box{
+    background:var(--bg-elev); border:1px solid var(--line);
+    border-radius:14px; padding:14px 16px;
+    font-size:12.5px; color:var(--text-dim);
+    margin-top:6px; line-height:1.55;
+  }
+  .info-box b{color:var(--text);}
+
+  /* ===== Social links ===== */
+  .social-links{
+    display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;
+  }
+  .social-btn{
+    display:flex; align-items:center; gap:8px;
+    background:var(--card); border:1px solid var(--line);
+    border-radius:12px; padding:10px 14px;
+    text-decoration:none; color:var(--text);
+    font-size:13px; font-weight:700; flex:1; min-width:calc(50% - 5px);
+  }
+  .social-btn:active{transform:scale(0.97);}
+  .social-btn .s-icon{font-size:18px;}
+
+  /* ===== Referral ===== */
+  .ref-link-box{
+    background:var(--bg-elev); border:1px dashed var(--gold-dim);
+    border-radius:14px; padding:14px;
+    display:flex; align-items:center; gap:10px; margin-bottom:16px;
+  }
+  .ref-link-box .link-text{
+    flex:1; font-size:12.5px; color:var(--text-dim);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .copy-btn{
+    background:var(--gold); color:#1a1300;
+    border:none; border-radius:10px;
+    padding:9px 14px; font-weight:800; font-size:12.5px;
+    cursor:pointer; flex-shrink:0; font-family:inherit;
+  }
+  .copy-btn.copied{background:var(--green); color:#06210f;}
+
+  .ref-stats{display:flex; gap:10px; margin-bottom:18px;}
+  .ref-stat{flex:1; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; text-align:center;}
+  .ref-stat .n{font-size:22px; font-weight:800; color:var(--gold);}
+  .ref-stat .l{font-size:11px; color:var(--text-dim); margin-top:2px;}
+
+  .tier-list{display:flex; flex-direction:column; gap:10px;}
+  .tier{
+    display:flex; align-items:center; gap:12px;
+    background:var(--card); border:1px solid var(--line);
+    border-radius:14px; padding:13px 15px;
+  }
+  .tier.unlocked{border-color:var(--gold-dim); background:var(--card-2);}
+  .tier .tier-icon{width:38px; height:38px; border-radius:10px; background:var(--bg-elev); display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0;}
+  .tier.unlocked .tier-icon{background:var(--gold); color:#1a1300;}
+  .tier .tier-text{flex:1;}
+  .tier .tier-text .t1{font-weight:800; font-size:14px;}
+  .tier .tier-text .t2{font-size:11.5px; color:var(--text-dim); margin-top:1px;}
+  .tier .tier-percent{font-weight:800; font-size:16px; color:var(--gold);}
+
+  /* ===== Leaderboard ===== */
+  .podium{display:flex; align-items:flex-end; gap:8px; margin-bottom:20px;}
+  .podium-card{flex:1; border-radius:16px 16px 10px 10px; text-align:center; padding:14px 8px 12px; position:relative;}
+  .podium-card .crown{font-size:20px; margin-bottom:4px; display:block;}
+  .podium-card .avatar{width:46px; height:46px; border-radius:50%; background:var(--bg-elev); margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:19px; border:2px solid rgba(255,255,255,0.15);}
+  .podium-card .pname{font-weight:800; font-size:12.5px;}
+  .podium-card .refs{font-size:11px; color:rgba(0,0,0,0.55); font-weight:700; margin-top:2px;}
+  .podium-card .prize{font-size:11px; font-weight:800; margin-top:6px; padding:3px 8px; border-radius:8px; display:inline-block;}
+  .p1{background:linear-gradient(165deg,#FFE27A,#F5C518); order:2; padding-top:20px;}
+  .p1 .prize{background:rgba(0,0,0,0.18); color:#3a2c00;}
+  .p2{background:linear-gradient(165deg,#E7EAF0,#B9C0CC); order:1;}
+  .p2 .prize{background:rgba(0,0,0,0.15); color:#2a2e36;}
+  .p3{background:linear-gradient(165deg,#E3996B,#CD7F32); order:3;}
+  .p3 .prize{background:rgba(0,0,0,0.18); color:#3a1f06;}
+
+  .rank-row{
+    display:flex; align-items:center; gap:12px;
+    background:var(--card); border:1px solid var(--line);
+    border-radius:13px; padding:11px 14px; margin-bottom:8px;
+  }
+  .rank-row .rank-num{width:26px; text-align:center; font-weight:800; color:var(--text-dim); font-size:13px;}
+  .rank-row .rank-name{flex:1; font-weight:700; font-size:13.5px;}
+  .rank-row .rank-refs{font-size:12px; color:var(--text-dim);}
+
+  .uc-info{margin-top:18px;}
+  .uc-row{display:flex; align-items:center; gap:12px; background:var(--bg-elev); border:1px solid var(--line); border-radius:13px; padding:12px 14px; margin-bottom:8px;}
+  .uc-row .uc-medal{font-size:20px; width:28px; text-align:center;}
+  .uc-row .uc-text{flex:1; font-size:13px; font-weight:700;}
+  .uc-row .uc-amt{font-weight:800; color:var(--gold); font-size:14px;}
+
+  /* ===== Profile ===== */
+  .profile-head{display:flex; align-items:center; gap:14px; margin-bottom:20px;}
+  .profile-avatar{
+    width:64px; height:64px; border-radius:50%;
+    background:linear-gradient(135deg, var(--gold), #8a6c00);
+    display:flex; align-items:center; justify-content:center;
+    font-size:26px; font-weight:800; color:#1a1300; flex-shrink:0;
+  }
+  .profile-name{font-size:18px; font-weight:800;}
+  .profile-id{font-size:12.5px; color:var(--text-dim); margin-top:2px;}
+
+  .balance-card{
+    background:linear-gradient(150deg, var(--card-2), var(--card));
+    border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px; margin-bottom:16px;
+  }
+  .balance-card .label{font-size:12px; color:var(--text-dim); letter-spacing:0.5px; text-transform:uppercase;}
+  .balance-card .amount{font-size:32px; font-weight:800; color:var(--gold); margin-top:4px;}
+  .balance-card .amount span{font-size:15px; color:var(--text-dim); font-weight:700;}
+  .topup-btn{
+    width:100%; margin-top:16px;
+    background:var(--gold); color:#1a1300;
+    border:none; border-radius:13px; padding:13px;
+    font-weight:800; font-size:14.5px; cursor:pointer; font-family:inherit;
+  }
+
+  .vip-status-card{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:14px; padding:14px 16px; margin-bottom:10px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .vip-status-card .ic{font-size:20px;}
+  .vip-status-card .tx{flex:1;}
+  .vip-status-card .tx .a{font-weight:800; font-size:13.5px;}
+  .vip-status-card .tx .b{font-size:11.5px; color:var(--text-dim); margin-top:1px;}
+
+  /* ===== VIP Success Modal ===== */
+  .vip-success{
+    position:fixed; inset:0; background:rgba(0,0,0,0.85);
+    display:none; align-items:center; justify-content:center;
+    z-index:200; padding:20px;
+  }
+  .vip-success.show{display:flex;}
+  .vs-box{
+    background:var(--card); border:1px solid var(--gold-dim);
+    border-radius:22px; padding:28px 22px; text-align:center;
+    width:100%; max-width:340px;
+    box-shadow:0 0 40px rgba(245,197,24,0.2);
+    animation:popIn .3s ease;
+  }
+  @keyframes popIn{from{transform:scale(0.85); opacity:0;} to{transform:scale(1); opacity:1;}}
+  .vs-emoji{font-size:48px; margin-bottom:12px; display:block;}
+  .vs-title{font-size:20px; font-weight:800; margin-bottom:8px;}
+  .vs-sub{font-size:13.5px; color:var(--text-dim); line-height:1.5; margin-bottom:20px;}
+  .vs-link-btn{
+    display:block; width:100%;
+    background:var(--gold); color:#1a1300;
+    border:none; border-radius:13px; padding:14px;
+    font-weight:800; font-size:15px; text-decoration:none;
+    cursor:pointer; font-family:inherit; margin-bottom:10px;
+  }
+  .vs-close{
+    display:block; width:100%;
+    background:transparent; color:var(--text-dim);
+    border:1px solid var(--line); border-radius:13px;
+    padding:12px; font-weight:700; font-size:13.5px;
+    cursor:pointer; font-family:inherit;
+  }
+
+  /* ===== Modal (top up) ===== */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.6);
+    display:none; align-items:flex-end; z-index:100;
+    backdrop-filter:blur(2px);
+  }
+  .modal-overlay.show{display:flex;}
+  .modal-sheet{
+    background:var(--bg-elev); border-radius:22px 22px 0 0;
+    width:100%; padding:22px 18px 26px;
+    border-top:1px solid var(--line);
+    animation:slideUp .25s ease; max-height:85vh; overflow-y:auto;
+  }
+  @keyframes slideUp{from{transform:translateY(100%);} to{transform:translateY(0);}}
+  .modal-handle{width:36px; height:4px; background:var(--line); border-radius:3px; margin:0 auto 16px;}
+  .modal-title{font-size:18px; font-weight:800; margin-bottom:4px;}
+  .modal-sub{font-size:12.5px; color:var(--text-dim); margin-bottom:18px; line-height:1.5;}
+
+  .pay-method{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px;}
+  .pay-method .pm-label{font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;}
+  .pay-method .pm-value-row{display:flex; align-items:center; gap:8px;}
+  .pay-method .pm-value{flex:1; font-size:14.5px; font-weight:700; font-family:'Courier New',monospace; letter-spacing:0.5px; word-break:break-all;}
+  .pm-copy{background:var(--card-2); border:1px solid var(--line); color:var(--text); border-radius:9px; padding:8px 12px; font-size:12px; font-weight:700; cursor:pointer; flex-shrink:0; font-family:inherit;}
+  .pm-copy.copied{background:var(--green); color:#06210f; border-color:var(--green);}
+
+  .paid-btn{width:100%; margin-top:8px; background:var(--green); color:#06210f; border:none; border-radius:13px; padding:13px; font-weight:800; font-size:14.5px; cursor:pointer; font-family:inherit;}
+  .modal-close{width:100%; margin-top:10px; background:transparent; color:var(--text-dim); border:1px solid var(--line); border-radius:13px; padding:12px; font-weight:700; font-size:13.5px; cursor:pointer; font-family:inherit;}
+
+  .toast{
+    position:fixed; top:18px; left:50%; transform:translateX(-50%) translateY(-20px);
+    background:var(--card-2); border:1px solid var(--gold-dim);
+    color:var(--text); padding:11px 18px; border-radius:30px;
+    font-size:13px; font-weight:700; z-index:300;
+    opacity:0; transition:all .25s ease; pointer-events:none;
+    box-shadow:0 8px 20px rgba(0,0,0,0.4);
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  /* ===== Bottom nav ===== */
+  .bottom-nav{
+    position:fixed; bottom:0; left:0; right:0;
+    background:var(--bg-elev); border-top:1px solid var(--line);
+    display:flex; padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+    z-index:50;
+  }
+  .nav-item{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+    padding:8px 2px; border-radius:12px; color:var(--text-dim);
+    background:none; border:none; font-family:inherit; cursor:pointer;
+  }
+  .nav-item .ic{font-size:20px; line-height:1;}
+  .nav-item .lb{font-size:10.5px; font-weight:700;}
+  .nav-item.active{color:var(--gold);}
+  .nav-item.active .ic{transform:translateY(-1px);}
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">💎</div>
+      <div class="brand-text">CLOUDE VIP<span>PREMIUM</span></div>
+      <div class="balance-chip"><span class="coin">🪙</span><span id="topBalance">0</span></div>
+    </div>
+  </div>
+
+  <!-- Banner -->
+  <div class="banner" id="bannerEl"></div>
+
+  <!-- VIP SOTIB OLISH -->
+  <div class="screen active" id="screen-vip">
+    <div class="section-title">VIP sotib olish</div>
+    <div class="section-sub">VIP kanalga obuna bo'lib, eksklyuziv kontentdan foydalanishni boshlang. To'lov ichki balansingizdan yechiladi.</div>
+
+    <div class="vip-card" id="card15">
+      <div class="vip-row">
+        <div><div class="vip-name">15 kunlik VIP</div><div class="vip-desc">Qisqa muddatli sinov tarifi</div></div>
+        <div class="vip-price"><span class="num" id="price15">30,000</span><span class="unit">so'm</span></div>
+      </div>
+      <button class="vip-buy-btn" onclick="buyVip('15 kunlik', getCfg('price15', 30000))">Sotib olish</button>
+    </div>
+
+    <div class="vip-card" id="card30">
+      <div class="vip-row">
+        <div><div class="vip-name">1 oylik VIP</div><div class="vip-desc">Har oy yangilanadigan to'liq kirish</div></div>
+        <div class="vip-price"><span class="num" id="price30">60,000</span><span class="unit">so'm</span></div>
+      </div>
+      <button class="vip-buy-btn" onclick="buyVip('1 oylik', getCfg('price30', 60000))">Sotib olish</button>
+    </div>
+
+    <div class="vip-card featured">
+      <div class="ribbon">TAVSIYA</div>
+      <div class="vip-row">
+        <div><div class="vip-name">1 sezonlik VIP</div><div class="vip-desc">3 oyga to'g'ri keladi — eng tejamli tarif</div></div>
+        <div class="vip-price"><span class="num" id="price90">100,000</span><span class="unit">so'm</span></div>
+      </div>
+      <button class="vip-buy-btn" onclick="buyVip('1 sezonlik', getCfg('price90', 100000))">Sotib olish</button>
+    </div>
+
+    <div class="vip-card has-ribbon">
+      <div class="ribbon" style="background:var(--silver); color:#1a1d22;">PREMIUM</div>
+      <div class="vip-row">
+        <div><div class="vip-name">VIP sezonlik (umrlik)</div><div class="vip-desc">Bir martalik to'lov — butun umrga kirish</div></div>
+        <div class="vip-price"><span class="num" id="priceLife">300,000</span><span class="unit">so'm</span></div>
+      </div>
+      <button class="vip-buy-btn" onclick="buyVip('VIP sezonlik', getCfg('priceLife', 300000))">Sotib olish</button>
+    </div>
+
+    <div class="info-box">
+      💡 <b>Eslatma:</b> Referal orqali do'stlaringizni taklif qilib, VIP narxlaridan <b>5%, 10% yoki 15%</b> gacha chegirma qo'lga kiriting. Tafsilotlar uchun <b>Referal</b> bo'limiga o'ting.
+    </div>
+  </div>
+
+  <!-- REFERAL -->
+  <div class="screen" id="screen-referal">
+    <div class="section-title">Referal</div>
+    <div class="section-sub">Quyidagi havolani do'stlaringizga yuboring. Ular link orqali ro'yxatdan to'liq o'tgach, sizga referal sifatida qo'shiladi.</div>
+
+    <div class="ref-link-box">
+      <div class="link-text" id="refLinkText">https://t.me/cloudevip_bot?start=ref_000000</div>
+      <button class="copy-btn" id="refCopyBtn" onclick="copyRefLink()">Nusxalash</button>
+    </div>
+
+    <div class="ref-stats">
+      <div class="ref-stat"><div class="n" id="refCount">0</div><div class="l">Taklif qilinganlar</div></div>
+      <div class="ref-stat"><div class="n" id="refDiscount">0%</div><div class="l">Joriy chegirma</div></div>
+    </div>
+
+    <!-- Ijtimoiy tarmoqlar -->
+    <div class="section-sub" style="margin-bottom:10px; font-weight:800; color:var(--text); font-size:14px;">Bizni kuzating</div>
+    <div class="social-links" id="socialLinks">
+      <a class="social-btn" id="tgBtn" href="#" target="_blank"><span class="s-icon">✈️</span>Telegram</a>
+      <a class="social-btn" id="igBtn" href="#" target="_blank"><span class="s-icon">📸</span>Instagram</a>
+      <a class="social-btn" id="ytBtn" href="#" target="_blank"><span class="s-icon">▶️</span>YouTube</a>
+    </div>
+
+    <div class="section-sub" style="margin-bottom:10px; font-weight:800; color:var(--text); font-size:14px;">Chegirma darajalari</div>
+    <div class="tier-list">
+      <div class="tier" id="tier-10">
+        <div class="tier-icon">①</div>
+        <div class="tier-text"><div class="t1">10 ta do'st qo'shing</div><div class="t2">VIP narxlardan chegirma olasiz</div></div>
+        <div class="tier-percent">5%</div>
+      </div>
+      <div class="tier" id="tier-20">
+        <div class="tier-icon">②</div>
+        <div class="tier-text"><div class="t1">20 ta do'st qo'shing</div><div class="t2">VIP narxlardan chegirma olasiz</div></div>
+        <div class="tier-percent">10%</div>
+      </div>
+      <div class="tier" id="tier-30">
+        <div class="tier-icon">③</div>
+        <div class="tier-text"><div class="t1">30 ta do'st qo'shing</div><div class="t2">VIP narxlardan chegirma olasiz</div></div>
+        <div class="tier-percent">15%</div>
+      </div>
+    </div>
+
+    <div class="info-box" style="margin-top:14px;">
+      ⚠️ Chegirma faqat do'stingiz <b>to'liq ro'yxatdan o'tganidan</b> so'ng hisoblanadi. Bitta umumiy havola orqali Telegram, Instagram va YouTube'dagi barcha tomoshabinlaringizni taklif qilishingiz mumkin.
+        </div>
+  </div>
+
+  <!-- TOP O'YINCHILAR -->
+  <div class="screen" id="screen-top">
+    <div class="section-title">Top o'yinchilar</div>
+    <div class="section-sub">Eng ko'p do'st taklif qilgan 10 nafar foydalanuvchi reytingi. Har oy yakunida g'oliblarga PUBG UC sovrinlari beriladi.</div>
+
+    <div class="podium">
+      <div class="podium-card p2">
+        <span class="crown">🥈</span>
+        <div class="avatar">👤</div>
+        <div class="pname" id="p2name">—</div>
+        <div class="refs" id="p2refs">0 referal</div>
+        <div class="prize">90 UC</div>
+      </div>
+      <div class="podium-card p1">
+        <span class="crown">🥇</span>
+        <div class="avatar">👤</div>
+        <div class="pname" id="p1name">—</div>
+        <div class="refs" id="p1refs">0 referal</div>
+        <div class="prize">120 UC</div>
+      </div>
+      <div class="podium-card p3">
+        <span class="crown">🥉</span>
+        <div class="avatar">👤</div>
+        <div class="pname" id="p3name">—</div>
+        <div class="refs" id="p3refs">0 referal</div>
+        <div class="prize">60 UC</div>
+      </div>
+    </div>
+
+    <div id="rankList"></div>
+
+    <div class="uc-info">
+      <div class="section-sub" style="margin-bottom:10px; font-weight:800; color:var(--text); font-size:14px;">UC nima va sovrinlar qanday beriladi?</div>
+      <div class="uc-row"><div class="uc-medal">🥇</div><div class="uc-text">1-o'rin sovrini</div><div class="uc-amt">120 UC</div></div>
+      <div class="uc-row"><div class="uc-medal">🥈</div><div class="uc-text">2-o'rin sovrini</div><div class="uc-amt">90 UC</div></div>
+      <div class="uc-row"><div class="uc-medal">🥉</div><div class="uc-text">3-o'rin sovrini</div><div class="uc-amt">60 UC</div></div>
+      <div class="info-box">
+        🎮 <b>UC</b> — bu <b>PUBG Mobile</b> o'yinidagi ichki valyuta (Unknown Cash), u orqali o'yin ichida skin, qurol va boshqa narsalarni sotib olish mumkin. Reyting oyning oxirida yakunlanadi va g'oliblarning PUBG hisobiga UC yuklab beriladi.
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFIL -->
+  <div class="screen" id="screen-profile">
+    <div class="section-title">Profil</div>
+    <div class="section-sub">Hisobingiz ma'lumotlari va balansingiz</div>
+
+    <div class="profile-head">
+      <div class="profile-avatar" id="profileAvatar">👤</div>
+      <div>
+        <div class="profile-name" id="profileName">Foydalanuvchi</div>
+        <div class="profile-id" id="profileId">ID: —</div>
+      </div>
+    </div>
+
+    <div class="balance-card">
+      <div class="label">Balans</div>
+      <div class="amount"><span id="profileBalance">0</span> <span>so'm</span></div>
+      <button class="topup-btn" id="topupBtnProfile" onclick="openTopup()">+ Balans to'ldirish</button>
+    </div>
+
+    <div class="vip-status-card">
+      <div class="ic">💎</div>
+      <div class="tx">
+        <div class="a" id="vipStatusText">VIP aktiv emas</div>
+        <div class="b" id="vipStatusSub">Yuqoridagi VIP sotib olish bo'limidan tanlang</div>
+      </div>
+    </div>
+
+    <div class="vip-status-card" id="vipChannelCard" style="display:none;">
+      <div class="ic">🔗</div>
+      <div class="tx">
+        <div class="a">VIP Kanalga kirish</div>
+        <div class="b">Eksklyuziv kontentni ko'ring</div>
+      </div>
+      <a id="vipChannelLink" href="#" target="_blank" style="background:var(--gold);color:#1a1300;border:none;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;text-decoration:none;flex-shrink:0;">Kirish</a>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="showScreen('vip',this)">
+      <span class="ic">💎</span><span class="lb">VIP</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('referal',this)" id="navRef">
+      <span class="ic">👥</span><span class="lb">Referal</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('top',this)" id="navTop">
+      <span class="ic">🏆</span><span class="lb">Top</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('profile',this)">
+      <span class="ic">👤</span><span class="lb">Profil</span>
+    </button>
+  </div>
+
+  <!-- VIP Success Modal -->
+  <div class="vip-success" id="vipSuccess">
+    <div class="vs-box">
+      <span class="vs-emoji">🎉</span>
+      <div class="vs-title">Tabriklaymiz!</div>
+      <div class="vs-sub" id="vsSubText">VIP muvaffaqiyatli faollashtirildi. Endi eksklyuziv VIP kanalga kira olasiz!</div>
+      <a class="vs-link-btn" id="vsChannelBtn" href="#" target="_blank">💎 VIP Kanalga kirish</a>
+      <button class="vs-close" onclick="closeVipSuccess()">Yopish</button>
+    </div>
+  </div>
+
+  <!-- Top Up Modal -->
+  <div class="modal-overlay" id="topupModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">💳 Balans to'ldirish</div>
+      <div class="modal-sub" id="payNoteEl">Quyidagi rekvizitlarga to'lov qiling va tasdiqlang.</div>
+
+      <div class="pay-method" id="cardSection">
+        <div class="pm-label">💳 Uzcard / Humo</div>
+        <div class="pm-value-row">
+          <div class="pm-value" id="cardNumEl">—</div>
+          <button class="pm-copy" onclick="copyText('cardNumEl',this)">Nusxa</button>
+        </div>
+        <div style="font-size:11.5px;color:var(--text-dim);margin-top:6px;" id="cardNameEl"></div>
+      </div>
+
+      <div class="pay-method" id="usdtSection">
+        <div class="pm-label">💰 USDT (TRC20)</div>
+        <div class="pm-value-row">
+          <div class="pm-value" id="usdtEl">—</div>
+          <button class="pm-copy" onclick="copyText('usdtEl',this)">Nusxa</button>
+        </div>
+      </div>
+
+      <button class="paid-btn" onclick="confirmPaid()">✅ To'lov qildim</button>
+      <button class="modal-close" onclick="closeTopup()">Bekor qilish</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'cloude_vip_config';
+
+// Load config from localStorage (set by admin panel)
+function loadCfg(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  }catch(e){ return {}; }
+}
+
+function getCfg(key, def){
+  const cfg = loadCfg();
+  return cfg[key] !== undefined ? cfg[key] : def;
+}
+
+// User state
+let userBalance = parseInt(localStorage.getItem('user_balance') || '0');
+let userVip = localStorage.getItem('user_vip') || '';
+let userId = localStorage.getItem('user_id') || String(Math.floor(Math.random()*900000+100000));
+localStorage.setItem('user_id', userId);
+
+// ⚠️ Render.com ga deploy qilgandan keyin shu linkni yangilang:
+const API_BASE = 'https://cloude-vip-api.onrender.com';
+
+// Telegram WebApp
+let tgUser = null;
+try{
+  if(window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe.user){
+    tgUser = Telegram.WebApp.initDataUnsafe.user;
+    Telegram.WebApp.expand();
+    Telegram.WebApp.setHeaderColor('#0B0E14');
+  }
+}catch(e){}
+
+// Load real profile photo
+async function loadProfilePhoto(userId){
+  try{
+    const res = await fetch(`${API_BASE}/api/photo/${userId}`);
+    const data = await res.json();
+    if(data.photo){
+      const avatarEl = document.getElementById('profileAvatar');
+      avatarEl.innerHTML = `<img src="${data.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" onerror="this.parentElement.innerHTML='👤'">`;
+    }
+  }catch(e){ /* fallback harfli avatar */ }
+}
+
+function init(){
+  const cfg = loadCfg();
+
+  // Balance
+  document.getElementById('topBalance').textContent = userBalance.toLocaleString();
+  document.getElementById('profileBalance').textContent = userBalance.toLocaleString();
+
+  // Profile
+  if(tgUser){
+    const name = [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ');
+    document.getElementById('profileName').textContent = name || 'Foydalanuvchi';
+    document.getElementById('profileAvatar').textContent = (name||'U')[0].toUpperCase();
+    document.getElementById('profileId').textContent = 'ID: ' + tgUser.id;
+    // Real rasm yuklash
+    loadProfilePhoto(tgUser.id);
+  } else {
+    document.getElementById('profileId').textContent = 'ID: ' + userId;
+  }
+
+  // VIP status
+  if(userVip){
+    document.getElementById('vipStatusText').textContent = '✅ ' + userVip + ' VIP faol';
+    document.getElementById('vipStatusSub').textContent = 'Siz hozirda VIP a\'zosiz';
+    document.getElementById('vipChannelCard').style.display = 'flex';
+    const vipLink = cfg.vipLink || 'https://t.me/+O1VMVyydnZA3OTRi';
+    document.getElementById('vipChannelLink').href = vipLink;
+  }
+
+  // Prices
+  const fmt = n => Number(n).toLocaleString('uz-UZ');
+  document.getElementById('price15').textContent = fmt(cfg.price15 || 30000);
+  document.getElementById('price30').textContent = fmt(cfg.price30 || 60000);
+  document.getElementById('price90').textContent = fmt(cfg.price90 || 100000);
+  document.getElementById('priceLife').textContent = fmt(cfg.priceLife || 300000);
+
+  // Social links
+  const tgLink = cfg.tgLink || 'https://t.me/CLOUDE_CHEATS';
+  const igLink = cfg.igLink || 'https://www.instagram.com/cp_cheat?igsh=MTR0YTRrcTR0YXU0ZQ==';
+  const ytLink = cfg.ytLink || 'https://www.youtube.com/@CP_PUBG1K';
+  document.getElementById('tgBtn').href = tgLink;
+  document.getElementById('igBtn').href = igLink;
+  document.getElementById('ytBtn').href = ytLink;
+
+  // Referal link
+  const botBase = cfg.botLink || 'https://t.me/cloudevip_bot';
+  document.getElementById('refLinkText').textContent = botBase + '?start=ref_' + userId;
+
+  // Banner
+  const banner = cfg.bannerText || '';
+  const bannerEl = document.getElementById('bannerEl');
+  if(banner){
+    bannerEl.textContent = banner;
+    bannerEl.classList.add('show');
+  } else {
+    bannerEl.classList.remove('show');
+  }
+
+  // Top players
+  document.getElementById('p1name').textContent = cfg.p1name || '—';
+  document.getElementById('p1refs').textContent = (cfg.p1refs || 0) + ' referal';
+  document.getElementById('p2name').textContent = cfg.p2name || '—';
+  document.getElementById('p2refs').textContent = (cfg.p2refs || 0) + ' referal';
+  document.getElementById('p3name').textContent = cfg.p3name || '—';
+  document.getElementById('p3refs').textContent = (cfg.p3refs || 0) + ' referal';
+
+  // Nav toggles
+  if(cfg.togReferral === false) document.getElementById('navRef').style.display='none';
+  if(cfg.togLeaderboard === false) document.getElementById('navTop').style.display='none';
+  if(cfg.togTopup === false){
+    document.getElementById('topupBtnProfile').style.display='none';
+  }
+
+  // Pay modal
+  const cardNum = cfg.cardNum || '';
+  const cardName = cfg.cardName || '';
+  const usdtAddr = cfg.usdtAddr || '';
+  document.getElementById('cardNumEl').textContent = cardNum || 'Kiritilmagan';
+  document.getElementById('cardNameEl').textContent = cardName;
+  document.getElementById('usdtEl').textContent = usdtAddr || 'Kiritilmagan';
+  document.getElementById('payNoteEl').textContent = cfg.payNote || 'Quyidagi rekvizitlarga to\'lov qiling.';
+  if(!cardNum) document.getElementById('cardSection').style.display='none';
+  if(!usdtAddr) document.getElementById('usdtSection').style.display='none';
+}
+
+function showScreen(name, btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+
+function buyVip(plan, price){
+  const cfg = loadCfg();
+  if(userBalance >= price){
+    userBalance -= price;
+    localStorage.setItem('user_balance', userBalance);
+    userVip = plan;
+    localStorage.setItem('user_vip', plan);
+
+    const vipLink = cfg.vipLink || 'https://t.me/+O1VMVyydnZA3OTRi';
+    const vipName = cfg.vipName || 'CLOUDE VIP PREMIUM';
+
+    document.getElementById('vsSubText').textContent = plan + ' VIP muvaffaqiyatli faollashtirildi! Endi ' + vipName + ' kanalga kira olasiz.';
+    document.getElementById('vsChannelBtn').href = vipLink;
+    document.getElementById('vipSuccess').classList.add('show');
+    init();
+  } else {
+    const need = price - userBalance;
+    showToast('❌ Balansingiz yetarli emas! ' + need.toLocaleString() + " so'm kerak");
+    setTimeout(()=>openTopup(), 1200);
+  }
+}
+
+function closeVipSuccess(){ document.getElementById('vipSuccess').classList.remove('show'); }
+
+function openTopup(){ document.getElementById('topupModal').classList.add('show'); }
+function closeTopup(){ document.getElementById('topupModal').classList.remove('show'); }
+
+function confirmPaid(){
+  closeTopup();
+  showToast('✅ Admin tekshirmoqda, balans tez orada to\'ldiriladi!');
+}
+
+function copyRefLink(){
+  const text = document.getElementById('refLinkText').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.getElementById('refCopyBtn');
+    btn.textContent='Nusxalandi!'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='Nusxalash'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function copyText(elId, btn){
+  const text = document.getElementById(elId).textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='✓'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='Nusxa'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=> t.classList.remove('show'), 2800);
+}
+
+init();
+</script>
+</body>
+  </html>
+  
