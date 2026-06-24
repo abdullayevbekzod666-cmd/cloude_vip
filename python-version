@@ -1,0 +1,2 @@
+echo "3.11.9" > /mnt/user-data/outputs/.python-version
+cat /mnt/user-data/outputs/.python-version
