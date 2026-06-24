@@ -260,7 +260,7 @@ def main():
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, unknown))
 
     logger.info("Bot ishga tushdi...")
-    app.run_polling()
+    app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == "__main__":
     main()
