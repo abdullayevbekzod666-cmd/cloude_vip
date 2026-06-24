@@ -630,18 +630,9 @@
 
   function renderLeaderboard(){
     // Mock leaderboard data — replace with real backend data
-    const data = [
-      {name:"Sherzod", refs:47},
-      {name:"Diyora", refs:39},
-      {name:"Aziz", refs:31},
-      {name:"Bekzod", refs:24},
-      {name:"Nodira", refs:21},
-      {name:"Jasur", refs:18},
-      {name:"Madina", refs:14},
-      {name:"Otabek", refs:11},
-      {name:"Kamola", refs:9},
-      {name:"Sardor", refs:6},
-    ];
+    const data = [];
+  
+
     document.getElementById('p1name').textContent = data[0].name;
     document.getElementById('p1refs').textContent = data[0].refs + " referal";
     document.getElementById('p2name').textContent = data[1].name;
