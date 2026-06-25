@@ -7,7 +7,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "8916800325:AAEPAHaUDwMJs6WhoTjwmL13W88h7KzS20Y")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "8916800325:AAEG1JlDpWOW87IaysfLNYT6qZLfS-XMSZw")
 ADMIN_ID = int(os.environ.get("ADMIN_ID", "8068983911"))
 WEBAPP_URL = os.environ.get("WEBAPP_URL", "https://abdullayevbekzod666-cmd.github.io/cloude_vip/cloude_vip_webapp.html")
 
