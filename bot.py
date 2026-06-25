@@ -156,7 +156,7 @@ async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Buyruqni tushunmadim. /start ni bosing.")
 
 def main():
-     app = Application.builder().token(BOT_TOKEN).proxy(proxy).get_updates_proxy(proxy).build()
+    app = Application.builder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("confirm", admin_confirm))
